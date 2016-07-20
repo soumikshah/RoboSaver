@@ -261,19 +261,20 @@ class CharacterController(ShowBase):
             tempCount= 1
 
             health = health - 1
-            self.inst4.remove()
+            self.inst4.remove_node()
             self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
             print health
             print self.characterNP.getZ()
         # self.processContacts()
-        radius = 0.04
+        radius = 0.05
 
         for coin in render.findAllMatches("**/=coin" ):
-            if (self.characterNP.getPos() - coin.getPos()) < radius:
+            distOfPlayer = self.characterNP.getPos() - coin.getPos()
+            if  (self.characterNP.getPos() - coin.getPos())< radius:
                 global counter
                 #global addInstructions
                 counter = counter + 1
-                self.inst3.remove()
+                self.inst3.remove_node()
                 self.inst3 = addInstructions(0.68, "Coins:{} ".format(counter))
 
                 # b = OnscreenText(parent=self.myFrame , scale=0.1, pos=(0.80,0.93,0.68),fg=(0.8,0.6,0.5,1))
@@ -344,7 +345,6 @@ class CharacterController(ShowBase):
         height = 0
         angle = -25
 
-
         for i in range(10):
             shape = BulletBoxShape(size * 0.55)
             pos = origin * i + size * i
@@ -358,9 +358,9 @@ class CharacterController(ShowBase):
             if i % 2 == 0:
                 #print "soiumik"
                 stairHprInterval1 = stairNP.hprInterval(4, Point3(pos),
-                                                                            startHpr=Point3(360, 0, 0))
+                                                                                startHpr=Point3(360, 0, 0))
                 stairHprInterval = stairNP.hprInterval(4, Point3(pos),
-                                                            startHpr=Point3(360, 0, 0))
+                                                                startHpr=Point3(360, 0, 0))
                 self.actorRobot = Sequence(stairHprInterval,stairHprInterval1)
                 self.actorRobot.loop()
             modelNP = loader.loadModel('models/box.egg')
@@ -396,6 +396,11 @@ class CharacterController(ShowBase):
 #               coinModel.setZ(1.0)
                 coinModel.setScale(0.5)
                 coinModel.setHpr(0,0,90)
+                # coinHprInterval = coinModel.hprInterval(3, Point3(), startHpr = Point3(360,0,0))
+                # coinHprInterval1 = coinModel.hprInterval(3, Point3(), startHpr = Point3(360,0,0))
+                #
+                # self.coinRotate = Sequence(coinHprInterval,coinHprInterval1)
+                # self.coinRotate.loop()
                 coinModel.setTag("coin",str(i))
                 self.moon_tex = loader.loadTexture("models/gold.jpg")
     	        coinModel.setTexture(self.moon_tex, 1)
@@ -404,6 +409,62 @@ class CharacterController(ShowBase):
             modelNP.setPos(-size.x/2.0, -size.y/2.0, -size.z/2.0)
             modelNP.setScale(size)
             self.world.attachRigidBody(stairNP.node())
+
+        origin1 = Point3(-70,3,8.50)
+        plank = BulletBoxShape(Vec3(6, 9.75, 0.5))
+        plankNP = self.render.attachNewNode(BulletRigidBodyNode('PLANK'))
+        plankNP.setCollideMask(BitMask32.allOn())
+        plankNP.node().addShape(plank)
+        plankNP.setPos(-60, 0, 9)
+        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        self.stoner = loader.loadModel("models/stone")
+        self.stoner.reparentTo(plankNP)
+        self.stoner.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
+        self.stoner.setScale(13 ,20 , 0)
+        self.world.attachRigidBody(plankNP.node())
+
+        plank = BulletBoxShape(Vec3(6, 9.75, 0.5))
+        plankNP = self.render.attachNewNode(BulletRigidBodyNode('PLANK'))
+        plankNP.setCollideMask(BitMask32.allOn())
+        plankNP.node().addShape(plank)
+        plankNP.setPos(-65, 21, 9)
+        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        self.stoner = loader.loadModel("models/stone")
+        self.stoner.reparentTo(plankNP)
+        self.stoner.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
+        self.stoner.setScale(13 ,20 , 0)
+        self.world.attachRigidBody(plankNP.node())
+
+        for i in range(10):
+            print i
+            shape = BulletBoxShape(size * 0.55)
+            pos = origin1  + size * -i
+            pos.setY(0)
+            pos.setX(pos.getX()*1)
+
+            if i % 2 == 0:
+                #print "soiumik"
+                stairPosInterval1 = stairNP.posInterval(8, Point3(stairNP.getX(),stairNP.getY()+4,stairNP.getZ()),
+                                                                            startPos=Point3(stairNP.getX(),stairNP.getY()-4,stairNP.getZ()))
+                stairPosInterval = stairNP.posInterval(8, Point3(stairNP.getX(),stairNP.getY()-4,stairNP.getZ()),
+                                                            startPos=Point3(stairNP.getX(),stairNP.getY()+4,stairNP.getZ()))
+                self.actorStair = Sequence(stairPosInterval1,stairPosInterval)
+                self.actorStair.loop()
+            stairNP = self.render.attachNewNode(BulletRigidBodyNode('Stair%i' % i))
+            stairNP.node().addShape(shape)
+            stairNP.setPos(pos)
+            print stairNP.getX(),' X, Y :',stairNP.getY(),' Z: ',stairNP.getZ()
+            #stairNP.setHpr(360,0,0)
+            stairNP.setCollideMask(BitMask32.allOn())
+            modelNP = loader.loadModel('models/box.egg')
+            modelNP.reparentTo(stairNP)
+            modelNP.setPos(-size.x/2.0, -size.y/2.0, -size.z/3.0)
+            modelNP.setScale(size)
+            self.world.attachRigidBody(stairNP.node())
+
+
+
+
 
 
         # Character
