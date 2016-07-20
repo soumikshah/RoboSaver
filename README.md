@@ -1,11 +1,11 @@
---------------------------------------------------------------------:ROBOSAVER Manual:---------------------------------------------------------------------------
+# RoboSaver
+It is a 3D game made in Panda3D and uses Bullet Physics Engine
 
-
-  When you spawn on stair your objective is to collect coins in this level. You won't die in this level because this game is just the demo of environment and RobotMan. You, as RobotMan can jump and run, animation is done for Idle state, running and jumping state. Background music is provided by Timbre from FreeSound.com, Jumping and running sound is also implemented.
+When you spawn on stair your objective is to collect coins in this level. You won't die in this level because this game is just the demo of environment and RobotMan. You, as RobotMan can jump and run, animation is done for Idle state, running and jumping state. Background music is provided by Timbre from FreeSound.com, Jumping and running sound is also implemented.
   
-  You can see health displayed on the top, coins collected is next to it. There are 5 coins in this level to collect. 
+You can see health displayed on the top, coins collected is next to it. There are 5 coins in this level to collect. 
   
-  Timer is there in the center of DirectFrame, DirectFrame is used along with OnScreenText to show timer,coins and health.
+Timer is there in the center of DirectFrame, DirectFrame is used along with OnScreenText to show timer,coins and health.
 
 Stairs have bulletPhysics, every alternate steps are rotating. You have to jump through each steps to go till last stairs and collect coins. In this level there are no AI's so it's pretty simple game. In next level you can expect to get punched and/or fired by the AI's and there will be health potions and boss fight. There will be secret dungeon where player need to answer certain questions correctly to increase his health and coins. It's like bonus points. 
 
@@ -27,6 +27,3 @@ Player Controls  -
 "Ctrl" button is used to jump the player.
 "Escp" button is used to exit the game.
 "F3" button is used to get out of debug mode.
-
-  
-  
