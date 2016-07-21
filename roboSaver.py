@@ -435,6 +435,7 @@ class CharacterController(ShowBase):
         self.stoner.setScale(13 ,20 , 0)
         self.world.attachRigidBody(plankNP.node())
 
+
         for i in range(10):
             print i
             shape = BulletBoxShape(size * 0.55)
@@ -466,7 +467,7 @@ class CharacterController(ShowBase):
 
 
 
-
+############################################################################################################
         # Character
         h = 4.75
         w = 0.5
@@ -493,6 +494,163 @@ class CharacterController(ShowBase):
         self.actorNP.setScale(0.2048)
         self.actorNP.setH(180)
         self.actorNP.setPos(0, 0, 0)
+
+
+
+    # shape = BulletCapsuleShape(w, h - 2 * w, ZUp)
+    # self.character = BulletCharacterControllerNode(shape, 0.4, 'Player')
+    # #    self.character.setMass(1.0)
+    # self.characterNP = self.render.attachNewNode(self.character)
+    # self.characterNP.setPos(-2, 0, 14)
+    # self.characterNP.setH(45)
+    # self.characterNP.setCollideMask(BitMask32.allOn())
+    # self.world.attachCharacter(self.character)
+#########################################             ENEMY 1           ########################################################################
+
+        # beefShape = BulletCapsuleShape(w+0.10,h-3 *w,ZUp)
+        # self.beefyCharacter = BulletCharacterControllerNode(beefShape,0.4,'enemy')
+        # self.beefyCharacterNP = self.render.attachNewNode(self.beefyCharacter)
+        # #self.beefyCharacterNP.node().addShape(beefShape)
+        #
+        # self.beefyCharacterNP.setPos(-5,20,2)
+        # self.beefyCharacterNP.setH(90)
+        # self.beefyCharacterNP.setCollideMask(BitMask32.allOn())
+        # self.world.attachCharacter(self.beefyCharacter)
+
+        self.beefyManNP = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP.reparentTo(render)
+        self.beefyManNP.setScale(0.2)
+        self.beefyManNP.setH(90)
+        self.beefyManNP.setPos(-5,20,2)
+
+        enemyPosInterval1 = self.beefyManNP.posInterval(13, Point3(self.beefyManNP.getX()+4,self.beefyManNP.getY(),self.beefyManNP.getZ()),
+                                                            startPos=Point3(self.beefyManNP.getX()-4,self.beefyManNP.getY(),self.beefyManNP.getZ()))
+        enemyPosInterval2 = self.beefyManNP.posInterval(13, Point3(self.beefyManNP.getX()-4,self.beefyManNP.getY(),self.beefyManNP.getZ()),
+                                                            startPos=Point3(self.beefyManNP.getX()+4,self.beefyManNP.getY(),self.beefyManNP.getZ()))
+        enemyHprInterval1 = self.beefyManNP.hprInterval(3, Point3(self.beefyManNP.getH()+180,self.beefyManNP.getP(),self.beefyManNP.getR()),
+                                                            startHpr=Point3(0, 0, 0))
+        enemyHprInterval2 = self.beefyManNP.hprInterval(3, Point3(0, 0, 0),
+                                                            startHpr=Point3(self.beefyManNP.getH()+180, self.beefyManNP.getP(),self.beefyManNP.getR()))
+        self.enemyPace = Sequence(enemyPosInterval1,enemyHprInterval1,
+                                      enemyPosInterval2, enemyHprInterval2)
+        self.enemyPace.loop()
+        self.beefyManNP.loop('walk')
+##############################################          ENEMY 2                     ######################################################################
+#         beefShape = BulletCapsuleShape(w+0.10,h-3 *w,ZUp)
+#         #self.beefyCharacter1 = BulletCharacterControllerNode(beefShape,0.4,'enemy')
+#         self.beefyCharacterNP1 = self.render.attachNewNode(BulletRigidBodyNode('enemy1'))
+#         self.beefyCharacterNP1.node().addShape(beefShape)
+#         self.beefyCharacterNP1.setPos(-10,15,2)
+#         self.beefyCharacterNP1.setH(90)
+# #        self.beefyCharacterNP1.setCollideMask(BitMask32.allOn())
+#         self.world.attachRigidBody(self.beefyCharacterNP1.node())
+
+        self.beefyManNP1 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP1.reparentTo(render)
+        self.beefyManNP1.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+        self.beefyManNP1.setPos(-10,15,2)
+        enemy1PosInterval1 = self.beefyManNP1.posInterval(13, Point3(self.beefyManNP1.getX(),self.beefyManNP1.getY()+4,self.beefyManNP1.getZ()),
+                                                            startPos=Point3(self.beefyManNP1.getX(),self.beefyManNP1.getY()-4,self.beefyManNP1.getZ()))
+        enemy1PosInterval2 = self.beefyManNP1.posInterval(13, Point3(self.beefyManNP1.getX(),self.beefyManNP1.getY()-4,self.beefyManNP1.getZ()),
+                                                            startPos=Point3(self.beefyManNP1.getX(),self.beefyManNP1.getY()+4,self.beefyManNP1.getZ()))
+        enemy1HprInterval1 = self.beefyManNP1.hprInterval(3, Point3(self.beefyManNP1.getH()+180,self.beefyManNP1.getP(),self.beefyManNP1.getR()),
+                                                            startHpr=Point3(0, 0, 0))
+        enemy1HprInterval2 = self.beefyManNP1.hprInterval(3, Point3(0, 0, 0),
+                                                            startHpr=Point3(self.beefyManNP1.getH()+180, self.beefyManNP1.getP(),self.beefyManNP1.getR()))
+        self.enemy1Pace = Sequence(enemy1PosInterval2,enemy1HprInterval1,
+                                      enemy1PosInterval1, enemy1HprInterval2)
+        self.enemy1Pace.loop()
+
+        self.beefyManNP1.loop('walk')
+
+########################################################          ENEMY 3               ####################################################################
+#         beefShape = BulletCapsuleShape(w+0.10,h-3*w,ZUp)
+#         self.beefyCharacterNP2 = self.render.attachNewNode(BulletRigidBodyNode('enemy2'))
+#         self.beefyCharacterNP2.node().addShape(beefShape)
+#         self.beefyCharacterNP2.setPos(-10,-20,2)
+#         self.beefyCharacterNP2.setH(0)
+# #        self.beefyCharacterNP1.setCollideMask(BitMask32.allOn())
+#         self.world.attachRigidBody(self.beefyCharacterNP2.node())
+
+        self.beefyManNP2 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP2.reparentTo(render)
+        self.beefyManNP2.setScale(0.2)
+        self.beefyManNP2.setH(0)
+        self.beefyManNP2.setPos(-10,-20,2)
+        enemy2PosInterval1 = self.beefyManNP2.posInterval(13, Point3(self.beefyManNP2.getX(),self.beefyManNP2.getY()+4,self.beefyManNP2.getZ()),
+                                                            startPos=Point3(self.beefyManNP2.getX(),self.beefyManNP2.getY()-4,self.beefyManNP2.getZ()))
+        enemy2PosInterval2 = self.beefyManNP2.posInterval(13, Point3(self.beefyManNP2.getX(),self.beefyManNP2.getY()-4,self.beefyManNP2.getZ()),
+                                                            startPos=Point3(self.beefyManNP2.getX(),self.beefyManNP2.getY()+4,self.beefyManNP2.getZ()))
+        enemy2HprInterval1 = self.beefyManNP2.hprInterval(3, Point3(self.beefyManNP2.getH()+180,self.beefyManNP2.getP(),self.beefyManNP2.getR()),
+                                                            startHpr=Point3(0, 0, 0))
+        enemy2HprInterval2 = self.beefyManNP2.hprInterval(3, Point3(0, 0, 0),
+                                                            startHpr=Point3(self.beefyManNP2.getH()+180, self.beefyManNP2.getP(),self.beefyManNP2.getR()))
+        self.enemy2Pace = Sequence(enemy2PosInterval2,enemy2HprInterval1,
+                                      enemy2PosInterval1, enemy2HprInterval2)
+        self.enemy2Pace.loop()
+        self.beefyManNP2.loop('walk')
+
+####################################################                ENEMY 4                  ########################################################################
+        # beefShape = BulletCapsuleShape(w+0.10,h-3*w,ZUp)
+        # self.beefyCharacterNP3 = self.render.attachNewNode(BulletRigidBodyNode('enemy3'))
+        # self.beefyCharacterNP3.node().addShape(beefShape)
+        # self.beefyCharacterNP3.setPos(-5,-15,2)
+        # self.beefyCharacterNP3.setH(90)
+#        self.beefyCharacterNP1.setCollideMask(BitMask32.allOn())
+        #self.world.attachRigidBody(self.beefyCharacterNP3.node())
+        self.beefyManNP3 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP3.reparentTo(render)
+        self.beefyManNP3.setScale(0.2)
+        self.beefyManNP3.setH(90)
+        self.beefyManNP3.setPos(-5,-15,2)
+        enemy3PosInterval1 = self.beefyManNP3.posInterval(13, Point3(self.beefyManNP3.getX()-4,self.beefyManNP3.getY(),self.beefyManNP3.getZ()),
+                                                            startPos=Point3(self.beefyManNP3.getX()+4,self.beefyManNP3.getY(),self.beefyManNP3.getZ()))
+        enemy3PosInterval2 = self.beefyManNP3.posInterval(13, Point3(self.beefyManNP3.getX()+4,self.beefyManNP3.getY(),self.beefyManNP3.getZ()),
+                                                            startPos=Point3(self.beefyManNP3.getX()-4,self.beefyManNP3.getY(),self.beefyManNP3.getZ()))
+        enemy3HprInterval1 = self.beefyManNP3.hprInterval(3, Point3(self.beefyManNP3.getH()+180,self.beefyManNP3.getP(),self.beefyManNP3.getR()),
+                                                            startHpr=Point3(0, 0, 0))
+        enemy3HprInterval2 = self.beefyManNP3.hprInterval(3, Point3(0, 0, 0),
+                                                            startHpr=Point3(self.beefyManNP3.getH()+180, self.beefyManNP3.getP(),self.beefyManNP3.getR()))
+        self.enemy3Pace = Sequence(enemy3PosInterval2,enemy3HprInterval1,
+                                      enemy3PosInterval1, enemy3HprInterval2)
+
+        self.enemy3Pace.loop()
+        self.beefyManNP3.loop('walk')
+
+        # #### Setting name
+        # self.beefyManNP.setTag("Key", "Value")
+        # value = self.beefyManNP.getTag("Key")
+        # self.beefyManNP.setPythonTag("key", object)
+        # object = self.beefyManNP.getPythonTag("key")
+        # self.beefyManNP.setName("name-%i")
+
+        # for  i in range(10):
+        #     self.beefyManNP = Actor('models/beefy/beefy.egg',{
+        #                             'walk':'models/beefy/beefy-walk.egg',
+        #                             'idle':'models/beefy/beefy-idle.egg'})
+        #     self.beefyManNP.reparentTo(render)
+        #     self.beefyManNP.setScale(0.2)
+        #     self.beefyManNP.setH(180)
+        #     self.beefyManNP.setPos(i+3,i,3)
+        #     #### Setting name
+        #     #self.beefyManNP.setTag("Key", "Value")
+        #     #value = self.beefyManNP.getTag("Key")
+        #     #self.beefyManNP.setPythonTag("key", object)
+        #     #object = self.beefyManNP.getPythonTag("key")
+        #     self.beefyManNP.setName("name-%i")
+        #     ####
+            #self.bombNP.setPos(self.charracterNP.getPos())
+
+
 
 
 
