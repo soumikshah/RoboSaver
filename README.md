@@ -28,4 +28,4 @@ Player Controls  -
 "Escp" button is used to exit the game.
 "F3" button is used to get out of debug mode.
 
-Video for trailer of the initial game is https://www.youtube.com/watch?v=K4600OX9Hc8
+Video for trailer of the initial game is here at https://www.youtube.com/watch?v=K4600OX9Hc8
