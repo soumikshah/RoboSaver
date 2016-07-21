@@ -57,6 +57,9 @@ def addInstructions1(pos, msg):
 def addInstructions2(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
                     pos=(0.10,0.93,0.55), align=TextNode.ALeft, scale = .05)
+def storyModeConversation(pos, msg):
+    return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
+                    pos=(-0.90,-0.97,0), align=TextNode.ALeft, scale = .05)
 
 class CharacterController(ShowBase):
 
@@ -101,9 +104,10 @@ class CharacterController(ShowBase):
        # b.setPos(-1.3,0.95)
         # This list will stored fired bullets.
         self.bullets = []
-        self.inst3 = addInstructions(0.85, "Coins: ")
+        #self.inst3 = addInstructions(0.85, "Coins: ")
         self.inst4 = addInstructions1(0.55, "Health: 100")
         self.inst5 = addInstructions2(0.55,"Timer: 00:00")
+        self.story = storyModeConversation(0.10,"Hello, There are 4 enemies on ground and 3 on planks. Kill them'll")
         # Task
         taskMgr.add(self.update, 'updateWorld')
 
@@ -248,9 +252,9 @@ class CharacterController(ShowBase):
         if (camdist > 15.0):
             base.camera.setPos(base.camera.getPos() + camvec*(camdist-15))
             camdist = 15.0
-        if (camdist < 6.0):
-            base.camera.setPos(base.camera.getPos() - camvec*(6-camdist))
-            camdist = 6.0
+        # if (camdist < 5.0):
+        #     base.camera.setPos(base.camera.getPos() - camvec*(5-camdist))
+        #     camdist = 5.0
         if inputState.isSet('topView'):    base.camera.setZ(base.camera,+20 * globalClock.getDt())
         if inputState.isSet('bottomView'): base.camera.setZ(base.camera, -20 * globalClock.getDt())
         if inputState.isSet('rightView'): base.camera.setX(base.camera, +20 * globalClock.getDt())
@@ -259,11 +263,14 @@ class CharacterController(ShowBase):
         self.floater.setZ(self.characterNP.getZ() + 0.4)
         base.camera.lookAt(self.floater)
         global tempCount
+        if self.characterNP.getZ()>4.33:
+            #print self.characterNP.getZ()
+            tempCount = 0
         if self.characterNP.getZ()<2.50 and tempCount == 0:
             global health
             tempCount= 1
 
-            health = health - 1
+            health = health - 5
             self.inst4.remove_node()
             self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
             print health
@@ -271,14 +278,100 @@ class CharacterController(ShowBase):
         # self.processContacts()
         radius = 0.05
 
+        enemy0 = self.beefyManNP.getPos()
+        enemy1 = self.beefyManNP1.getPos()
+        enemy2 = self.beefyManNP2.getPos()
+        enemy3 = self.beefyManNP3.getPos()
+        enemy5 = self.beefyManNP5.getPos()
+        enemy6 = self.beefyManNP6.getPos()
+        enemy7 = self.beefyManNP7.getPos()
+        master = self.masterNP.getPos()
+        evil = self.evilNP.getPos()
+        actor = self.characterNP.getPos()
+
+        distance1 = actor - enemy0
+        distance2 = actor - enemy1
+        distance3 = actor -enemy2
+        distance4 = actor - enemy3
+        distance5 = actor - enemy5
+        distance6 = actor - enemy6
+        distance7 = actor - enemy7
+        distance8 = actor - master
+        distance9 = actor - evil
+
+        # distance1.setZ(0)
+        # distance2.setZ(0)
+        # distance3.setZ(0)
+        # distance4.setZ(0)
+        # distance5.setZ(0)
+        # distance6.setZ(0)
+        # distance7.setZ(0)
+        # distance8.setZ(0)
+        # distance9.setZ(0)
+
+        enemyDist = distance1.length()
+        enemyDist1 = distance2.length()
+        enemyDist2 = distance3.length()
+        enemyDist3 = distance4.length()
+        enemyDist4 = distance5.length()
+        enemyDist5 = distance6.length()
+        enemyDist6 = distance7.length()
+        enemyDist7 = distance8.length()
+        enemyDist8 = distance9.length()
+
+        #print "this is enemy distance",enemyDist1
+        if enemyDist < 15:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"First Enemy: Do you hear something?")
+
+        if enemyDist1 < 15:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"Second Enemy: Don't move, I hear something..")
+
+        if enemyDist2 < 15 :
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"Third Enemy: who's there? come out or I'll fire.....*HEY*")
+
+        if enemyDist3 <15:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"Forth Enemy: Do you hear something? Srgt Thomas come in..anybody listening?")
+
+        if enemyDist4 <15:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"Fifth Enemy: We got company, take cover..take cover")
+            self.beefyManNP5.lookAt(self.characterNP.getPos())
+            self.beefyManNP5.setH(self.beefyManNP5.getH()+180)
+            #self.beefyManNP5.loop('idle')
+        if enemyDist5 <15:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"Sixth Enemy: I got this..")
+        if enemyDist7 < 15:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"Master: I knew he would come, I had faith in my creation")
+
+
+
         for coin in render.findAllMatches("**/=coin" ):
             distOfPlayer = self.characterNP.getPos() - coin.getPos()
             if  (self.characterNP.getPos() - coin.getPos())< radius:
-                global counter
+                #global counter
                 #global addInstructions
-                counter = counter + 1
-                self.inst3.remove_node()
-                self.inst3 = addInstructions(0.68, "Coins:{} ".format(counter))
+                global health
+                #tempCount= 1
+                if health < 100:
+                    health = health + 5
+                    self.story.destroy()
+                    self.story = storyModeConversation(0.10,"You Just received 5 health")
+                    coin.removeNode()
+
+                elif health == 100:
+                    health = health
+                self.inst4.remove_node()
+
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+                # counter = counter + 1
+                # self.inst3.remove_node()
+                # self.inst3 = addInstructions(0.68, "Coins:{} ".format(counter))
 
                 # b = OnscreenText(parent=self.myFrame , scale=0.1, pos=(0.80,0.93,0.68),fg=(0.8,0.6,0.5,1))
                 # # if counter!=1:
@@ -290,8 +383,7 @@ class CharacterController(ShowBase):
 
                 #b.setPos(-1.3,0.95)
 
-                print counter
-                coin.removeNode()
+                #print counter
                 #b.destroy()
 
 
@@ -316,6 +408,7 @@ class CharacterController(ShowBase):
         self.render.clearLight()
         self.render.setLight(alightNP)
         self.render.setLight(dlightNP)
+
 
     def setup(self):
 
@@ -358,7 +451,7 @@ class CharacterController(ShowBase):
             stairNP.setPos(pos)
             stairNP.setCollideMask(BitMask32.allOn())
 
-            if i % 2 == 0:
+            if i % 3 == 0:
                 #print "soiumik"
                 stairHprInterval1 = stairNP.hprInterval(4, Point3(pos),
                                                                                 startHpr=Point3(360, 0, 0))
@@ -498,6 +591,14 @@ class CharacterController(ShowBase):
         self.actorNP.setH(180)
         self.actorNP.setPos(0, 0, 0)
 
+        # slight = Spotlight('slight')
+        # slight.setColor(VBase4(0, 1, 1, 1))
+        # lens = PerspectiveLens()
+        # slight.setLens(lens)
+        # slnp = render.attachNewNode(slight)
+        # slnp.setPos(10, 20, 0)
+        # slnp.lookAt(self.characterNP.getPos())
+        # render.setLight(slnp)
 
 
     # shape = BulletCapsuleShape(w, h - 2 * w, ZUp)
@@ -556,7 +657,7 @@ class CharacterController(ShowBase):
         self.beefyManNP1.reparentTo(render)
         self.beefyManNP1.setScale(0.2)
 #        self.beefyManNP1.setH(180)
-        self.beefyManNP1.setPos(-10,15,2)
+        self.beefyManNP1.setPos(10,15,2)
         enemy1PosInterval1 = self.beefyManNP1.posInterval(13, Point3(self.beefyManNP1.getX(),self.beefyManNP1.getY()+4,self.beefyManNP1.getZ()),
                                                             startPos=Point3(self.beefyManNP1.getX(),self.beefyManNP1.getY()-4,self.beefyManNP1.getZ()))
         enemy1PosInterval2 = self.beefyManNP1.posInterval(13, Point3(self.beefyManNP1.getX(),self.beefyManNP1.getY()-4,self.beefyManNP1.getZ()),
@@ -614,7 +715,7 @@ class CharacterController(ShowBase):
         self.beefyManNP3.reparentTo(render)
         self.beefyManNP3.setScale(0.2)
         self.beefyManNP3.setH(90)
-        self.beefyManNP3.setPos(-5,-15,2)
+        self.beefyManNP3.setPos(15,-15,2)
         enemy3PosInterval1 = self.beefyManNP3.posInterval(13, Point3(self.beefyManNP3.getX()-4,self.beefyManNP3.getY(),self.beefyManNP3.getZ()),
                                                             startPos=Point3(self.beefyManNP3.getX()+4,self.beefyManNP3.getY(),self.beefyManNP3.getZ()))
         enemy3PosInterval2 = self.beefyManNP3.posInterval(13, Point3(self.beefyManNP3.getX()+4,self.beefyManNP3.getY(),self.beefyManNP3.getZ()),
@@ -734,46 +835,6 @@ class CharacterController(ShowBase):
         self.evilNP.setPos(-67, 19, 11.25)
         self.evilNP.loop('idle')
 ################################################################################################################################################################
-        enemy0 = self.beefyManNP.getPos()
-        enemy1 = self.beefyManNP1.getPos()
-        enemy2 = self.beefyManNP2.getPos()
-        enemy3 = self.beefyManNP3.getPos()
-        enemy5 = self.beefyManNP5.getPos()
-        enemy6 = self.beefyManNP6.getPos()
-        enemy7 = self.beefyManNP7.getPos()
-        master = self.masterNP.getPos()
-        evil = self.evilNP.getPos()
-        actor = self.actorNP.getPos()
-
-        distance1 = actor - enemy0
-        distance2 = actor - enemy1
-        distance3 = actor -enemy2
-        distance4 = actor - enemy3
-        distance5 = actor - enemy5
-        distance6 = actor - enemy6
-        distance7 = actor - enemy7
-        distance8 = actor - master
-        distance9 = actor - evil
-
-        distance1.setZ(0)
-        distance2.setZ(0)
-        distance3.setZ(0)
-        distance4.setZ(0)
-        distance5.setZ(0)
-        distance6.setZ(0)
-        distance7.setZ(0)
-        distance8.setZ(0)
-        distance9.setZ(0)
-
-        enemyDist = distance1.length()
-        enemyDist1 = distance2.length()
-        enemyDist2 = distance3.length()
-        enemyDist3 = distance4.length()
-        enemyDist4 = distance5.length()
-        enemyDist5 = distance6.length()
-        enemyDist6 = distance7.length()
-        enemyDist7 = distance8.length()
-        enemyDist8 = distance9.length()
 
 
 
