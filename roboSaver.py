@@ -650,11 +650,86 @@ class CharacterController(ShowBase):
         #     ####
             #self.bombNP.setPos(self.charracterNP.getPos())
 
+#########################################################     ENEMY 5                           ########################################################################
+        self.beefyManNP5 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP5.reparentTo(render)
+        self.beefyManNP5.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+        self.beefyManNP5.setPos(-60, 0, 11)
+        enemy5PosInterval1 = self.beefyManNP5.posInterval(13, Point3(self.beefyManNP5.getX(),self.beefyManNP5.getY()+4,self.beefyManNP5.getZ()),
+                                                      startPos=Point3(self.beefyManNP5.getX(),self.beefyManNP5.getY()-4,self.beefyManNP5.getZ()))
+        enemy5PosInterval2 = self.beefyManNP5.posInterval(13, Point3(self.beefyManNP5.getX(),self.beefyManNP5.getY()-4,self.beefyManNP5.getZ()),
+                                                      startPos=Point3(self.beefyManNP5.getX(),self.beefyManNP5.getY()+4,self.beefyManNP5.getZ()))
+        enemy5HprInterval1 = self.beefyManNP5.hprInterval(3, Point3(self.beefyManNP5.getH()+180,self.beefyManNP5.getP(),self.beefyManNP5.getR()),
+                                                      startHpr=Point3(0, 0, 0))
+        enemy5HprInterval2 = self.beefyManNP5.hprInterval(3, Point3(0, 0, 0),
+                                                      startHpr=Point3(self.beefyManNP5.getH()+180, self.beefyManNP5.getP(),self.beefyManNP5.getR()))
+        self.enemy5Pace = Sequence(enemy5PosInterval2,enemy5HprInterval1,
+                                enemy5PosInterval1, enemy5HprInterval2)
 
+        self.enemy5Pace.loop()
 
+        self.beefyManNP5.loop('walk')
 
+#####################################################           ENEMY 6                    #############################################################################
 
+        self.beefyManNP6 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP6.reparentTo(render)
+        self.beefyManNP6.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+        self.beefyManNP6.setPos(-63, 21, 11)
+        enemy6PosInterval1 = self.beefyManNP6.posInterval(13, Point3(self.beefyManNP6.getX(),self.beefyManNP6.getY()+4,self.beefyManNP6.getZ()),
+                                                      startPos=Point3(self.beefyManNP6.getX(),self.beefyManNP6.getY()-4,self.beefyManNP6.getZ()))
+        enemy6PosInterval2 = self.beefyManNP6.posInterval(13, Point3(self.beefyManNP6.getX(),self.beefyManNP6.getY()-4,self.beefyManNP6.getZ()),
+                                                      startPos=Point3(self.beefyManNP6.getX(),self.beefyManNP6.getY()+4,self.beefyManNP6.getZ()))
+        enemy6HprInterval1 = self.beefyManNP6.hprInterval(3, Point3(self.beefyManNP6.getH()+180,self.beefyManNP6.getP(),self.beefyManNP6.getR()),
+                                                      startHpr=Point3(0, 0, 0))
+        enemy6HprInterval2 = self.beefyManNP6.hprInterval(3, Point3(0, 0, 0),
+                                                      startHpr=Point3(self.beefyManNP6.getH()+180, self.beefyManNP6.getP(),self.beefyManNP6.getR()))
+        self.enemy6Pace = Sequence(enemy6PosInterval2,enemy6HprInterval1,
+                                enemy6PosInterval1, enemy6HprInterval2)
 
+        self.enemy6Pace.loop()
+
+        self.beefyManNP6.loop('walk')
+
+#######################################################             ENEMY   7      ################################################################################
+
+        self.beefyManNP7 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP7.reparentTo(render)
+        self.beefyManNP7.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+        self.beefyManNP7.setColor(1,0,1,1)
+        #self.panda1.setColor(1,0,1,1)
+        self.beefyManNP7.setPos(-67, 24, 11)
+        self.beefyManNP7.loop('idle')
+
+############################################################            MASTER          ############################################################################
+        self.masterNP = Actor('models/lego/Cinder/Cinder.egg',{
+                                'idle':'models/lego/Cinder/Cinder-jump.egg'})
+        self.masterNP.reparentTo(render)
+        self.masterNP.setScale(0.5)
+
+#        self.beefyManNP1.setH(180)
+        self.masterNP.setPos(-67, 21, 11.25)
+        self.masterNP.loop('idle')
+
+############################################################         ENEMY LEADER - THE EVIL SCIENTIST         #######################################################
+
+        self.evilNP = Actor('models/lego/Scientist/Scientist.egg',{
+                                'idle':'models/lego/Scientist/Scientist-taser.egg'})
+        self.evilNP.reparentTo(render)
+        self.evilNP.setScale(0.5)
+#
+        self.evilNP.setH(180)
+        self.evilNP.setPos(-67, 19, 11.25)
+        self.evilNP.loop('idle')
 
         # Creates a bullet and adds it to the bullet list
     def fire(self, time):
