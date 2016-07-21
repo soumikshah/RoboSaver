@@ -3,7 +3,7 @@ from math import sin, cos,pi
 import sys
 import time
 from direct.showbase.ShowBase import ShowBase
-
+from pandac.PandaModules import TransparencyAttrib
 from direct.actor.Actor import Actor
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.InputStateGlobal import inputState
@@ -90,6 +90,9 @@ class CharacterController(ShowBase):
         self.nextBullet = 0.0
         self.myFrame = DirectFrame(frameColor=(0, 0, 0, 1),
                       frameSize=(-1.00, 1.00, 0.90, 1.0 ))
+        self.storyMode = DirectFrame(frameColor=(0,0,0,1),
+                        frameSize=(1.00,-1.00,-1.0,-0.9),pos=(0,-3,0))
+
 
 
         # self.textObject = OnscreenText(text = "sam", pos = (-1.3,0.95),
@@ -730,6 +733,49 @@ class CharacterController(ShowBase):
         self.evilNP.setH(180)
         self.evilNP.setPos(-67, 19, 11.25)
         self.evilNP.loop('idle')
+################################################################################################################################################################
+        enemy0 = self.beefyManNP.getPos()
+        enemy1 = self.beefyManNP1.getPos()
+        enemy2 = self.beefyManNP2.getPos()
+        enemy3 = self.beefyManNP3.getPos()
+        enemy5 = self.beefyManNP5.getPos()
+        enemy6 = self.beefyManNP6.getPos()
+        enemy7 = self.beefyManNP7.getPos()
+        master = self.masterNP.getPos()
+        evil = self.evilNP.getPos()
+        actor = self.actorNP.getPos()
+
+        distance1 = actor - enemy0
+        distance2 = actor - enemy1
+        distance3 = actor -enemy2
+        distance4 = actor - enemy3
+        distance5 = actor - enemy5
+        distance6 = actor - enemy6
+        distance7 = actor - enemy7
+        distance8 = actor - master
+        distance9 = actor - evil
+
+        distance1.setZ(0)
+        distance2.setZ(0)
+        distance3.setZ(0)
+        distance4.setZ(0)
+        distance5.setZ(0)
+        distance6.setZ(0)
+        distance7.setZ(0)
+        distance8.setZ(0)
+        distance9.setZ(0)
+
+        enemyDist = distance1.length()
+        enemyDist1 = distance2.length()
+        enemyDist2 = distance3.length()
+        enemyDist3 = distance4.length()
+        enemyDist4 = distance5.length()
+        enemyDist5 = distance6.length()
+        enemyDist6 = distance7.length()
+        enemyDist7 = distance8.length()
+        enemyDist8 = distance9.length()
+
+
 
         # Creates a bullet and adds it to the bullet list
     def fire(self, time):
