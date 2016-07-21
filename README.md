@@ -27,3 +27,5 @@ Player Controls  -
 "Ctrl" button is used to jump the player.
 "Escp" button is used to exit the game.
 "F3" button is used to get out of debug mode.
+
+Video for trailer of the initial game is here at https://www.youtube.com/watch?v=K4600OX9Hc8
