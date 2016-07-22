@@ -46,6 +46,7 @@ BULLET_REPEAT = .2  # How often bullets can be fired
 BULLET_SPEED = 10   # Speed bullets move
 counter = 0;
 health = 100;
+enemiess = 7;
 
 tempCount = 0
 def addInstructions(pos, msg):
@@ -81,6 +82,7 @@ class CharacterController(ShowBase):
         self.accept('f3', self.toggleDebug)
         self.accept('control', self.doJump)
         self.accept('space',self.fire)
+        self.accept('b',self.secondaryFire)
         #self.accept('fire','space')
         self.isMoving = False
         #inputState.watchWithModifiers('fire','space')
@@ -285,7 +287,7 @@ class CharacterController(ShowBase):
             print self.characterNP.getZ()
         # self.processContacts()
         radius = 0.05
-
+        global enemiess
         enemy0 = self.beefyManNP.getPos()
         enemy1 = self.beefyManNP1.getPos()
         enemy2 = self.beefyManNP2.getPos()
@@ -334,6 +336,11 @@ class CharacterController(ShowBase):
             self.story = storyModeConversation(0.10,"First Enemy: Do you hear something?")
             if enemyDist < 6 and self.isFire == True:
                 self.beefyManNP.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire = False
 
 
         if enemyDist1 < 15:
@@ -341,33 +348,84 @@ class CharacterController(ShowBase):
             self.story = storyModeConversation(0.10,"Second Enemy: Don't move, I hear something..")
             if enemyDist1 < 6 and self.isFire == True:
                 self.beefyManNP1.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire = False
 
         if enemyDist2 < 15 :
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Third Enemy: who's there? come out or I'll fire.....*HEY*")
             if enemyDist2 < 6 and self.isFire == True:
                 self.beefyManNP2.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire = False
 
         if enemyDist3 <15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Forth Enemy: Do you hear something? Srgt Thomas come in..anybody listening?")
-            if enemyDist < 6 and self.isFire == True:
-                self.beefyManNP
+            if enemyDist3 < 6 and self.isFire == True:
+                self.beefyManNP3.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire = False
 
         if enemyDist4 <15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Fifth Enemy: We got company, take cover..take cover")
             self.beefyManNP5.lookAt(self.characterNP.getPos())
             self.beefyManNP5.setH(self.beefyManNP5.getH()+180)
+            if enemyDist4 < 6 and self.isFire == True:
+                self.beefyManNP5.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire = False
+
             #self.beefyManNP5.loop('idle')
         if enemyDist5 <15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Sixth Enemy: I got this..")
-        if enemyDist7 < 15:
+            if enemyDist5 < 6 and self.isFire == True:
+                self.beefyManNP6.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire =False
+
+        if enemyDist6 < 15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Master: I knew he would come, I had faith in my creation")
+            if enemyDist6 < 6 and self.isFire == True:
+                self.beefyManNP7.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire = False
+        if enemyDist7 < 15:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"I'll explode this iron tin")
+            if enemyDist7 < 6 and self.isFire == True:
+                self.evilNP.hide()
+                self.story.destroy()
+                enemiess = enemiess - 1
+                self.inst3.destroy()
+                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                self.isFire = False
 
-        print self.characterNP.getH()
+        #print "H "+str(self.characterNP.getH())
+        # if (self.characterNP.getH()> -179 and self.characterNP.getH()< -90 and self.isFire== True):
+        #     self.fire()
+        # #print self.characterNP.getH()
 
             #self.fire(task.time)  # If so, call the fire function
     # And disable firing for a bit
@@ -866,6 +924,20 @@ class CharacterController(ShowBase):
     def setExpires(self, obj, val):
         obj.setPythonTag("expires", val)
 
+    def secondaryFire(self):
+        self.isFire = True
+        obj = loader.loadModel("models/ball")
+        obj.reparentTo(render)
+        obj.setScale(0.2)
+        obj.setPos(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ())
+        obj.lookAt(self.characterNP.getPos())
+        #obj.setH(180)
+        bulletInterval1 = obj.posInterval(0.3, Point3(self.characterNP.getX()+4,self.characterNP.getY(),self.characterNP.getZ()),
+                                                      startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
+        bulletInterval1.start()
+
+
+
     def fire(self):
 
         #a =  int(round(time))
@@ -884,6 +956,7 @@ class CharacterController(ShowBase):
                             #    startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
                     #bulletSequence.loop()
         bulletInterval1.start()
+
         # else :
         #     bulletInterval1 = obj.posInterval(0.3, Point3(self.characterNP.getX()+4,self.characterNP.getY(),self.characterNP.getZ()),
         #                                               startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
