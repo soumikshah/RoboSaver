@@ -1,4 +1,3 @@
-
 from math import sin, cos,pi
 import sys
 import time
@@ -7,7 +6,6 @@ from pandac.PandaModules import TransparencyAttrib
 from direct.actor.Actor import Actor
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.InputStateGlobal import inputState
-
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 from panda3d.core import *
@@ -21,6 +19,7 @@ from panda3d.core import NodePath
 from panda3d.core import PandaNode
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
+from direct.interval.LerpInterval import LerpPosInterval
 from panda3d.core import *
 from panda3d.bullet import BulletWorld
 from panda3d.bullet import BulletHelper
@@ -47,19 +46,23 @@ BULLET_REPEAT = .2  # How often bullets can be fired
 BULLET_SPEED = 10   # Speed bullets move
 counter = 0;
 health = 100;
+
 tempCount = 0
 def addInstructions(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
-                    pos=(0.80,0.93,pos), align=TextNode.ALeft, scale = .05)
+                    pos=(-0.02,0.93,pos), align=TextNode.ALeft, scale = .05)
 def addInstructions1(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
-                    pos=(0.45,0.93,pos), align=TextNode.ALeft, scale = .05)
+                    pos=(0.65,0.93,pos), align=TextNode.ALeft, scale = .05)
 def addInstructions2(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
-                    pos=(0.10,0.93,0.55), align=TextNode.ALeft, scale = .05)
+                    pos=(0.35,0.93,0.55), align=TextNode.ALeft, scale = .05)
 def storyModeConversation(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
                     pos=(-0.90,-0.97,0), align=TextNode.ALeft, scale = .05)
+# def enemyNumber(pos, msg):
+#     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
+#                     pos=(0.10,0.93,0.55), align=TextNode.ALeft, scale = .05)
 
 class CharacterController(ShowBase):
 
@@ -67,16 +70,20 @@ class CharacterController(ShowBase):
 
     def __init__(self):
         ShowBase.__init__(self)
-
+        self.keys = {"fire":0}
         self.setupLights()
         fire=1
+
+        self.bullet=[]
         # Input
         self.accept('escape', self.doExit)
         #self.accept('r', self.doReset)
         self.accept('f3', self.toggleDebug)
         self.accept('control', self.doJump)
-        #self.accept('space', self.fire)
+        self.accept('space',self.fire)
+        #self.accept('fire','space')
         self.isMoving = False
+        #inputState.watchWithModifiers('fire','space')
         inputState.watchWithModifiers('forward', 'arrow_up')
         inputState.watchWithModifiers('reverse', 'arrow_down')
         inputState.watchWithModifiers('turnLeft', 'arrow_left')
@@ -104,7 +111,8 @@ class CharacterController(ShowBase):
        # b.setPos(-1.3,0.95)
         # This list will stored fired bullets.
         self.bullets = []
-        #self.inst3 = addInstructions(0.85, "Coins: ")
+        self.isFire = False
+        self.inst3 = addInstructions(0.65, "Enemies left: 7 ")
         self.inst4 = addInstructions1(0.55, "Health: 100")
         self.inst5 = addInstructions2(0.55,"Timer: 00:00")
         self.story = storyModeConversation(0.10,"Hello, There are 4 enemies on ground and 3 on planks. Kill them'll")
@@ -153,7 +161,7 @@ class CharacterController(ShowBase):
         self.character.setJumpSpeed(8.0)
         self.jumpSound = base.loader.loadSfx("models/armMoving.ogg")
 
-        self.actorNP.loop("jump")
+        self.actorNP.play("jump")
         #self.actorNP.pose("jump",5)
 
         self.character.doJump()
@@ -320,21 +328,31 @@ class CharacterController(ShowBase):
         enemyDist8 = distance9.length()
 
         #print "this is enemy distance",enemyDist1
-        if enemyDist < 15:
+        #global isFire
+        if enemyDist < 15 :
             self.story.destroy()
             self.story = storyModeConversation(0.10,"First Enemy: Do you hear something?")
+            if enemyDist < 6 and self.isFire == True:
+                self.beefyManNP.hide()
+
 
         if enemyDist1 < 15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Second Enemy: Don't move, I hear something..")
+            if enemyDist1 < 6 and self.isFire == True:
+                self.beefyManNP1.hide()
 
         if enemyDist2 < 15 :
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Third Enemy: who's there? come out or I'll fire.....*HEY*")
+            if enemyDist2 < 6 and self.isFire == True:
+                self.beefyManNP2.hide()
 
         if enemyDist3 <15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Forth Enemy: Do you hear something? Srgt Thomas come in..anybody listening?")
+            if enemyDist < 6 and self.isFire == True:
+                self.beefyManNP
 
         if enemyDist4 <15:
             self.story.destroy()
@@ -349,6 +367,10 @@ class CharacterController(ShowBase):
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Master: I knew he would come, I had faith in my creation")
 
+        print self.characterNP.getH()
+
+            #self.fire(task.time)  # If so, call the fire function
+    # And disable firing for a bit
 
 
         for coin in render.findAllMatches("**/=coin" ):
@@ -837,33 +859,43 @@ class CharacterController(ShowBase):
 ################################################################################################################################################################
 
 
-
+    def setExpires(self, obj, val):
+        obj.setPythonTag("expires", val)
         # Creates a bullet and adds it to the bullet list
-    def fire(self, time):
 
-        dt = globalClock.getDt()
-        if task.time > self.nextBullet:
-            self.fire(task.time)  # If so, call the fire function
-        # And disable firing for a bit
-            self.nextBullet = task.time + BULLET_REPEAT
-        # Remove the fire flag until the next spacebar press
-            fire = 0
-        #self.keys["fire"] = 0
-            direction = DEG_TO_RAD * self.ship.getR()
-            pos = self.ship.getPos()
-            bullet = loadObject("bullet.png", scale=.2)  # Create the object
-            bullet.setPos(pos)
-        # Velcity is in relation to the ship
-            vel =(self.getVelocity(self.actorNP) +
-                    (LVector3(sin(direction), 0, cos(direction)) *
-                    BULLET_SPEED))
-            self.setVelocity(bullet, vel)
-            # Set the bullet expiration time to be a certain amount past the
-            # current time
-            self.setExpires(bullet, time + BULLET_LIFE)
+    def setExpires(self, obj, val):
+        obj.setPythonTag("expires", val)
 
-            # Finally, add the new bullet to the list
-            self.bullets.append(bullet)
+    def fire(self):
+
+        #a =  int(round(time))
+        self.isFire = True
+        obj = loader.loadModel("models/ball")
+        obj.reparentTo(render)
+        obj.setScale(0.2)
+        obj.setPos(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ())
+        obj.lookAt(self.characterNP.getPos())
+        #obj.setH(180)
+        bulletInterval1 = obj.posInterval(0.3, Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()),
+                                                      startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
+        #bulletInterval2 = self.beefyManNP6.posInterval(3, Point3(self.characterNP.getX(),self.characterNP.getY()-4,self.characterNP.getZ()),
+                            #                          startPos=Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()))
+                            #bulletInterval =LerpPosInterval(obj,3.0,Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()),
+                            #    startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
+                    #bulletSequence.loop()
+        bulletInterval1.start()
+        # else :
+        #     bulletInterval1 = obj.posInterval(0.3, Point3(self.characterNP.getX()+4,self.characterNP.getY(),self.characterNP.getZ()),
+        #                                               startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
+        # #bulletInterval2 = self.beefyManNP6.posInterval(3, Point3(self.characterNP.getX(),self.characterNP.getY()-4,self.characterNP.getZ()),
+        #                     #                          startPos=Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()))
+        #                     #bulletInterval =LerpPosInterval(obj,3.0,Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()),
+        #                     #    startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
+        #             #bulletSequence.loop()
+        #     bulletInterval1.start()
+        # #self.bullet.append(obj)
+        # bulletInterval.start()
+
 
 
 game = CharacterController()
