@@ -47,7 +47,7 @@ BULLET_SPEED = 10   # Speed bullets move
 counter = 0;
 health = 100;
 enemiess = 7;
-
+counterBullet = 0;
 tempCount = 0
 def addInstructions(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
@@ -61,6 +61,9 @@ def addInstructions2(pos, msg):
 def storyModeConversation(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
                     pos=(-0.90,-0.97,0), align=TextNode.ALeft, scale = .05)
+def gameOverText(pos, msg):
+    return OnscreenText(text=msg, style=2, fg=(1,1,1,1),
+                    pos=(-1.0,0,0), align=TextNode.ALeft, scale = 0.10)
 # def enemyNumber(pos, msg):
 #     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
 #                     pos=(0.10,0.93,0.55), align=TextNode.ALeft, scale = .05)
@@ -71,11 +74,13 @@ class CharacterController(ShowBase):
 
     def __init__(self):
         ShowBase.__init__(self)
+        self.bombs = []
         self.keys = {"fire":0}
         self.setupLights()
         fire=1
 
         self.bullet=[]
+        self.enemy1Bullet = []
         # Input
         self.accept('escape', self.doExit)
         #self.accept('r', self.doReset)
@@ -83,8 +88,10 @@ class CharacterController(ShowBase):
         self.accept('control', self.doJump)
         self.accept('space',self.fire)
         self.accept('b',self.secondaryFire)
+        self.accept('enter',self.startGame)
         #self.accept('fire','space')
         self.isMoving = False
+        self.isEnemyFire = False
         #inputState.watchWithModifiers('fire','space')
         inputState.watchWithModifiers('forward', 'arrow_up')
         inputState.watchWithModifiers('reverse', 'arrow_down')
@@ -132,7 +139,6 @@ class CharacterController(ShowBase):
         # variable in a variety of calculations.
         self.floater = NodePath(PandaNode("floater"))
         self.floater.reparentTo(render)
-
     # def incBar(arg):
 	#         bar['value'] +=	arg
 	#         text = "Progress is:"+str(bar['value'])+'%'
@@ -216,6 +222,7 @@ class CharacterController(ShowBase):
         if (inputState.isSet('forward')!=0) or (inputState.isSet('reverse')!=0) or (inputState.isSet('left')!=0) or (inputState.isSet('right')!=0):
             if self.isMoving is False:
                 self.actorNP.loop("run")
+                #self.actorNP.play('attack')
                 self.mySound.setVolume(0.3)
                 self.mySound.setLoop(True)
                 self.mySound.play()
@@ -238,6 +245,7 @@ class CharacterController(ShowBase):
     #     self.myText.setText(str (nowTime))
 
     def update(self, task):
+        global health
         dt = globalClock.getDt()
         self.processInput(dt)
         self.world.doPhysics(dt, 4, 1./240.)
@@ -277,7 +285,7 @@ class CharacterController(ShowBase):
             #print self.characterNP.getZ()
             tempCount = 0
         if self.characterNP.getZ()<2.50 and tempCount == 0:
-            global health
+
             tempCount= 1
 
             health = health - 5
@@ -288,6 +296,7 @@ class CharacterController(ShowBase):
         # self.processContacts()
         radius = 0.05
         global enemiess
+        global counterBullet
         enemy0 = self.beefyManNP.getPos()
         enemy1 = self.beefyManNP1.getPos()
         enemy2 = self.beefyManNP2.getPos()
@@ -331,104 +340,202 @@ class CharacterController(ShowBase):
 
         #print "this is enemy distance",enemyDist1
         #global isFire
+
+####################################################################### Enemy 1             ###########################################################################
         if enemyDist < 15 :
             self.story.destroy()
             self.story = storyModeConversation(0.10,"First Enemy: Do you hear something?")
+            #counterBullet = 0
+
+
+            if enemyDist < 10 and counterBullet == 0:
+                self.beefyManNP.lookAt(self.characterNP.getPos())
+                self.beefyManNP.setH(self.beefyManNP.getH()+180)
+                counterBullet =1
+
+                self.enemyFire(self.beefyManNP)
+                self.isEnemyFire = False
+                health = health - 5
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+
             if enemyDist < 6 and self.isFire == True:
+                #self.actorNP.setPos(self.beefyManNP.getPos()+distance1*(3-enemyDist))
+
                 self.beefyManNP.hide()
                 self.story.destroy()
-                enemiess = enemiess - 1
-                self.inst3.destroy()
-                self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+                counterBullet = 0
                 self.isFire = False
+                if self.beefyManNP.hide() is True:
+                    print "gela re.."
+                    enemiess = enemiess - 1
+                    self.inst3.destroy()
+                    self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
 
-
+            if enemyDist < 2 :
+                self.characterNP.setPos(self.characterNP.getPos()-enemyDist+1)
+##############################################################################     Enemy 2 ##########################################################################
         if enemyDist1 < 15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Second Enemy: Don't move, I hear something..")
+
+            if enemyDist1 < 10 and counterBullet == 0:
+                self.beefyManNP1.lookAt(self.characterNP.getPos())
+                self.beefyManNP1.setH(self.beefyManNP1.getH()+180)
+                counterBullet = 1
+                self.enemyFire(self.beefyManNP1)
+                health = health - 5
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
             if enemyDist1 < 6 and self.isFire == True:
                 self.beefyManNP1.hide()
                 self.story.destroy()
                 enemiess = enemiess - 1
                 self.inst3.destroy()
+                counterBullet = 0
                 self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
                 self.isFire = False
+            if enemyDist1 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos()-enemyDist1+1)
 
+#############################################################################           ENEMY 3 ######################################################################
         if enemyDist2 < 15 :
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Third Enemy: who's there? come out or I'll fire.....*HEY*")
+            if enemyDist2 < 10 and counterBullet == 0:
+                self.beefyManNP2.lookAt(self.characterNP.getPos())
+                self.beefyManNP2.setH(self.beefyManNP2.getH()+180)
+                counterBullet = 1
+                self.enemyFire(self.beefyManNP2)
+                health = health - 5
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+                self.isEnemyFire = False
             if enemyDist2 < 6 and self.isFire == True:
                 self.beefyManNP2.hide()
                 self.story.destroy()
                 enemiess = enemiess - 1
+                counterBullet = 0
                 self.inst3.destroy()
                 self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
                 self.isFire = False
-
+            if enemyDist2 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos()-enemyDist2+1)
+###################################################################         ENEMY 4     ############################################################################
         if enemyDist3 <15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Forth Enemy: Do you hear something? Srgt Thomas come in..anybody listening?")
+            if enemyDist3 < 10 and counterBullet == 0:
+                self.beefyManNP3.lookAt(self.characterNP.getPos())
+                self.beefyManNP3.setH(self.beefyManNP3.getH()+180)
+                counterBullet =1
+                self.enemyFire(self.beefyManNP3)
+                health = health - 5
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+
+                self.isEnemyFire = False
             if enemyDist3 < 6 and self.isFire == True:
                 self.beefyManNP3.hide()
                 self.story.destroy()
                 enemiess = enemiess - 1
                 self.inst3.destroy()
+                counterBullet = 0
                 self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
                 self.isFire = False
-
+            if enemyDist3 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos()-enemyDist3+1)
+#################################################################           ENEMY 5         ##########################################################################
         if enemyDist4 <15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Fifth Enemy: We got company, take cover..take cover")
             self.beefyManNP5.lookAt(self.characterNP.getPos())
             self.beefyManNP5.setH(self.beefyManNP5.getH()+180)
+            if enemyDist4 < 10 and counterBullet == 0:
+                self.beefyManNP5.lookAt(self.characterNP.getPos())
+                self.beefyManNP5.setH(self.beefyManNP5.getH()+180)
+                counterBullet =1
+                self.enemyFire(self.beefyManNP5)
+                health = health - 5
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
             if enemyDist4 < 6 and self.isFire == True:
                 self.beefyManNP5.hide()
                 self.story.destroy()
+                counterBullet = 0
                 enemiess = enemiess - 1
                 self.inst3.destroy()
                 self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
                 self.isFire = False
-
+            if enemyDist4 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos()-enemyDist4+1)
+############################################################        ENEMY 6         ##################################################################################
             #self.beefyManNP5.loop('idle')
         if enemyDist5 <15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Sixth Enemy: I got this..")
+            if enemyDist5 < 10 and counterBullet == 0:
+                self.beefyManNP6.lookAt(self.characterNP.getPos())
+                self.beefyManNP6.setH(self.beefyManNP6.getH()+180)
+                counterBullet =1
+                self.enemyFire(self.beefyManNP6)
+                health = health - 5
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
             if enemyDist5 < 6 and self.isFire == True:
                 self.beefyManNP6.hide()
+                counterBullet = 0
                 self.story.destroy()
                 enemiess = enemiess - 1
                 self.inst3.destroy()
                 self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
                 self.isFire =False
-
+            if enemyDist5 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos()-enemyDist5+1)
+#####################################################################       ENEMY 7         #######################################################################
         if enemyDist6 < 15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"Master: I knew he would come, I had faith in my creation")
+            if enemyDist6 < 10 and counterBullet == 0:
+                self.beefyManNP7.lookAt(self.characterNP.getPos())
+                self.beefyManNP7.setH(self.beefyManNP7.getH()+180)
+                counterBullet =1
+                self.enemyFire(self.beefyManNP7)
+                health = health - 5
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
             if enemyDist6 < 6 and self.isFire == True:
                 self.beefyManNP7.hide()
                 self.story.destroy()
+                counterBullet = 0
                 enemiess = enemiess - 1
                 self.inst3.destroy()
                 self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
                 self.isFire = False
-        if enemyDist7 < 15:
+
+###########################################################################         MASTER              ##############################################################
+        if enemyDist8 < 15:
             self.story.destroy()
             self.story = storyModeConversation(0.10,"I'll explode this iron tin")
-            if enemyDist7 < 6 and self.isFire == True:
+            if enemyDist8 < 10 and counterBullet == 0:
+                self.evilNP.lookAt(self.characterNP.getPos())
+                self.evilNP.setH(self.evilNP.getH()+180)
+                counterBullet =1
+                self.enemyFire(self.evilNP)
+                health = health - 15
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+            if enemyDist8 < 6 and self.isFire == True:
                 self.evilNP.hide()
                 self.story.destroy()
+                counterBullet = 0
                 enemiess = enemiess - 1
                 self.inst3.destroy()
                 self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
                 self.isFire = False
+            if enemyDist8 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos()-enemyDist8+1)
 
-        #print "H "+str(self.characterNP.getH())
-        # if (self.characterNP.getH()> -179 and self.characterNP.getH()< -90 and self.isFire== True):
-        #     self.fire()
-        # #print self.characterNP.getH()
-
-            #self.fire(task.time)  # If so, call the fire function
-    # And disable firing for a bit
 
 
         for coin in render.findAllMatches("**/=coin" ):
@@ -447,27 +554,31 @@ class CharacterController(ShowBase):
                 elif health == 100:
                     health = health
                 self.inst4.remove_node()
-
                 self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
-                # counter = counter + 1
-                # self.inst3.remove_node()
-                # self.inst3 = addInstructions(0.68, "Coins:{} ".format(counter))
 
-                # b = OnscreenText(parent=self.myFrame , scale=0.1, pos=(0.80,0.93,0.68),fg=(0.8,0.6,0.5,1))
-                # # if counter!=1:
-                # #     b.destroy()
-                # #     #b.destroy()
-                # b = OnscreenText(parent=self.myFrame , scale=0.1, pos=(0.80,0.93,0.68),fg=(0.8,0.6,0.5,1))
-                #
-                # b.setText('Coins: {}'.format(counter))
+        for bomb in self.bombs:
+            timeAsString  = bomb.getTag("timer")
+            #print type(timeAsString), timeAsString
+            timeSinceBombWasCreated = globalClock.getRealTime() - float(timeAsString)
+            #print "Time Diff: ", timeSinceBombWasCreated
+            if timeSinceBombWasCreated > 3.0:
+            #    print "Removing Node"
+                bomb.removeNode()
+                self.bombs.remove(bomb)
+        for bomb in self.enemy1Bullet:
+            timeAsString  = bomb.getTag("timerForEnemy")
+            #print type(timeAsString), timeAsString
+            timeSinceBombWasCreated = globalClock.getRealTime() - float(timeAsString)
+            #print "Time Diff: ", timeSinceBombWasCreated
+            if timeSinceBombWasCreated > 3.0:
+                #print "Removing Node"
+                bomb.removeNode()
+                self.enemy1Bullet.remove(bomb)
 
-                #b.setPos(-1.3,0.95)
+        if health == 0:
+            taskMgr.remove('updateWorld')
+            self.inst6 = gameOverText(0,'Game Over, Press Enter to play again')
 
-                #print counter
-                #b.destroy()
-
-
-#        self.testAllContactingBodies()
         return task.cont
 
     def cleanup(self):
@@ -552,6 +663,7 @@ class CharacterController(ShowBase):
             #ballPos = origin * i + 1 + size * i +2
             pos.setY(0)
             pos.setX(pos.getX()*-1)
+
             #print actorNP.getZ()
             if i % 2 == 0:
                 #print "soiumik"
@@ -582,7 +694,7 @@ class CharacterController(ShowBase):
     	        coinModel.setTexture(self.moon_tex, 1)
             modelNP = loader.loadModel('models/box.egg')
             modelNP.reparentTo(stairNP)
-            modelNP.setPos(-size.x/2.0, -size.y/2.0, -size.z/2.0)
+            modelNP.setPos(-size.x/2.0, -size.y/2.0, -size.z /2.0)
             modelNP.setScale(size)
             self.world.attachRigidBody(stairNP.node())
 
@@ -613,7 +725,7 @@ class CharacterController(ShowBase):
 
 
         for i in range(10):
-            print i
+            #print i
             shape = BulletBoxShape(size * 0.55)
             pos = origin1  + size * -i
             pos.setY(0)
@@ -630,7 +742,7 @@ class CharacterController(ShowBase):
             stairNP = self.render.attachNewNode(BulletRigidBodyNode('Stair%i' % i))
             stairNP.node().addShape(shape)
             stairNP.setPos(pos)
-            print stairNP.getX(),' X, Y :',stairNP.getY(),' Z: ',stairNP.getZ()
+            #print stairNP.getX(),' X, Y :',stairNP.getY(),' Z: ',stairNP.getZ()
             #stairNP.setHpr(360,0,0)
             stairNP.setCollideMask(BitMask32.allOn())
             modelNP = loader.loadModel('models/box.egg')
@@ -645,21 +757,22 @@ class CharacterController(ShowBase):
 
 ############################################################################################################
         # Character
-        h = 4.75
+        h = 4.95
         w = 0.5
         shape = BulletCapsuleShape(w, h - 2 * w, ZUp)
         self.character = BulletCharacterControllerNode(shape, 0.4, 'Player')
         #    self.character.setMass(1.0)
         self.characterNP = self.render.attachNewNode(self.character)
         self.characterNP.setPos(-2, 0, 14)
-        self.characterNP.setH(45)
+        # self.characterNP.setH(45)
         self.characterNP.setCollideMask(BitMask32.allOn())
         self.world.attachCharacter(self.character)
 
         self.actorNP = Actor('models/robot/lack.egg', {
                          'run' : 'models/robot/lack-run.egg',
                          'walk' : 'models/robot/lack-idle.egg',
-                         'jump' : 'models/robot/lack-jump.egg'})
+                         'jump' : 'models/robot/lack-jump.egg',
+                         'attack': 'models/robot/lack-damage.egg'})
 
         self.mySound = base.loader.loadSfx("models/walk.ogg")
         self.jumpSound = base.loader.loadSfx("models/armMoving.ogg")
@@ -927,13 +1040,18 @@ class CharacterController(ShowBase):
     def secondaryFire(self):
         self.isFire = True
         obj = loader.loadModel("models/ball")
-        obj.reparentTo(render)
-        obj.setScale(0.2)
-        obj.setPos(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ())
-        obj.lookAt(self.characterNP.getPos())
+        obj.reparentTo(self.characterNP)
+        # obj.setPos(self.characterNP.getPos())
+        # obj.setHpr(self.characterNP.getHpr())
+
+        obj.setScale(0.3)
+        #obj.wrtReparentTo(render)
+        # obj.setPos(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ())
+        # obj.lookAt(self.characterNP.getPos())
+        # obj.setH(self.characterNP.getH())
         #obj.setH(180)
-        bulletInterval1 = obj.posInterval(0.3, Point3(self.characterNP.getX()+4,self.characterNP.getY(),self.characterNP.getZ()),
-                                                      startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
+        bulletInterval1 = obj.posInterval(0.3, Point3(obj.getX(), obj.getY() + 4, obj.getZ()),
+                                                      startPos=Point3( obj.getX(), obj.getY(), obj.getZ()))
         bulletInterval1.start()
 
 
@@ -944,32 +1062,29 @@ class CharacterController(ShowBase):
         self.isFire = True
         obj = loader.loadModel("models/ball")
         obj.reparentTo(render)
-        obj.setScale(0.2)
-        obj.setPos(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ())
+        obj.setScale(0.3)
+        obj.setPos(self.characterNP.getX(),self.characterNP.getY()+0.3,self.characterNP.getZ()-2)
         obj.lookAt(self.characterNP.getPos())
-        #obj.setH(180)
-        bulletInterval1 = obj.posInterval(0.3, Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()),
-                                                      startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
-        #bulletInterval2 = self.beefyManNP6.posInterval(3, Point3(self.characterNP.getX(),self.characterNP.getY()-4,self.characterNP.getZ()),
-                            #                          startPos=Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()))
-                            #bulletInterval =LerpPosInterval(obj,3.0,Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()),
-                            #    startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
-                    #bulletSequence.loop()
-        bulletInterval1.start()
+        #print type(globalClock.getRealTime()), globalClock.getRealTime()
+        obj.setTag("timer", str(globalClock.getRealTime()))
+        self.bombs.append(obj)
 
-        # else :
-        #     bulletInterval1 = obj.posInterval(0.3, Point3(self.characterNP.getX()+4,self.characterNP.getY(),self.characterNP.getZ()),
-        #                                               startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
-        # #bulletInterval2 = self.beefyManNP6.posInterval(3, Point3(self.characterNP.getX(),self.characterNP.getY()-4,self.characterNP.getZ()),
-        #                     #                          startPos=Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()))
-        #                     #bulletInterval =LerpPosInterval(obj,3.0,Point3(self.characterNP.getX(),self.characterNP.getY()+4,self.characterNP.getZ()),
-        #                     #    startPos=Point3(self.characterNP.getX(),self.characterNP.getY(),self.characterNP.getZ()))
-        #             #bulletSequence.loop()
-        #     bulletInterval1.start()
-        # #self.bullet.append(obj)
-        # bulletInterval.start()
+    def enemyFire(self, object):
 
+        #a =  int(round(time))
+        self.isEnemyFire = True
+        self.enemyObj = loader.loadModel("models/ball")
+        self.enemyObj.reparentTo(render)
+        self.enemyObj.setScale(0.3)
+        self.enemyObj.setPos(object.getX(), object.getY(),object.getZ()-1.7)
+        self.enemyObj.setTag("timerForEnemy", str(globalClock.getRealTime()))
+        self.enemy1Bullet.append(self.enemyObj)
 
+        # obj.setPos(self.characterNP.getX(),self.characterNP.getY()+0.3,self.characterNP.getZ()-2)
+        # obj.lookAt(self.characterNP.getPos())
+
+    def startGame(self):
+        taskMgr.add('updateWorld')
 
 game = CharacterController()
 game.run()
