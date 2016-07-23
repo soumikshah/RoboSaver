@@ -57,6 +57,11 @@ enemy5Counter = 0
 enemy6Counter = 0
 enemy7Counter = 0
 enemy8Counter = 0
+enemy9Counter = 0
+enemy10Counter = 0
+enemy11Counter = 0
+enemy12Counter = 0
+enemy13Counter = 0
 
 def addInstructions(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
@@ -266,7 +271,11 @@ class CharacterController(ShowBase):
         global enemy6Counter
         global enemy7Counter
         global enemy8Counter
-
+        global enemy9Counter
+        global enemy10Counter
+        global enemy11Counter
+        global enemy12Counter
+        global enemy13Counter
         #print taskMgr
         dt = globalClock.getDt()
         self.processInput(dt)
@@ -328,6 +337,10 @@ class CharacterController(ShowBase):
         enemy6 = self.beefyManNP6.getPos()
         enemy7 = self.beefyManNP7.getPos()
         enemy8 = self.beefyManNP8.getPos()
+        enemy9 = self.beefyManNP9.getPos()
+        enemy10 = self.beefyManNP10.getPos()
+        enemy11 = self.beefyManNP11.getPos()
+        enemy12 = self.beefyManNP12.getPos()
         master = self.masterNP.getPos()
         evil = self.evilNP.getPos()
         actor = self.characterNP.getPos()
@@ -342,7 +355,10 @@ class CharacterController(ShowBase):
         distance8 = actor - master
         distance9 = actor - evil
         distance10 = actor - enemy8
-
+        distance11 = actor - enemy9
+        distance12 = actor - enemy10
+        distance13 = actor - enemy11
+        distance14 = actor - enemy12
         # distance1.setZ(0)
         # distance2.setZ(0)
         # distance3.setZ(0)
@@ -363,7 +379,11 @@ class CharacterController(ShowBase):
         enemyDist7 = distance8.length()
         enemyDist8 = distance9.length()
         enemyDist9 = distance10.length()
-        #print "this is enemy distance",enemyDist1
+        enemyDist10 = distance11.length()
+        enemyDist11 = distance12.length()
+        enemyDist12 = distance13.length()
+        enemyDist13 = distance14.length()
+         #print "this is enemy distance",enemyDist1
         #global isFire
 
 ####################################################################### Enemy 1             ###########################################################################
@@ -556,6 +576,163 @@ class CharacterController(ShowBase):
                     self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
 
 ############################################################################        ENEMY 8             #############################################################
+        if enemyDist9 < 4:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"press space to kill this enemy..")
+            self.beefyManNP8.lookAt(self.characterNP.getPos())
+            self.beefyManNP8.setH(self.characterNP.getH()-55)
+            counterBullet =0
+            if self.isFire == True:
+                #counterBullet = 1
+                self.beefyManNP8.hide()
+                self.story.destroy()
+                self.story = storyModeConversation(0.10,"Up arrow will move forward and Left, Right arrow for directions. press help")
+                self.characterNP.setPos(self.characterNP.getPos())
+                self.isFire = False
+            if enemyDist9 < 2:
+                self.characterNP.setPos(self.characterNP.getPos() - enemyDist9+1.2)
+
+
+#######################################################################             ENEMY 10        ##################################################################
+        if enemyDist10 < 10:
+            self.story.destroy()
+            self.story = storyModeConversation(0.10,"You've to kill all enemy to reach level 2 and win this game")
+            if enemyDist10 < 7 and counterBullet == 0 and enemy9Counter == 0:
+                self.beefyManNP9.lookAt(self.characterNP.getPos())
+                self.beefyManNP9.setH(self.characterNP.getH()-55)
+                counterBullet = 1
+                self.enemyFire(self.beefyManNP9)
+                health = health - 3
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+                self.story.destroy()
+                self.story = storyModeConversation(0.10,"You'll lose 3 health each attack. Enemy will start to get stronger and powerful later.'")
+
+            if enemyDist10 < 6 and self.isFire == True:
+                self.beefyManNP9.hide()
+                self.story.destroy()
+                self.isFire = False
+                self.story.destroy()
+                self.story = storyModeConversation(0.10,"You'll lose 3 health each attack. Enemy will start to get stronger and powerful later.'")
+                counterBullet = 0
+                if self.beefyManNP9.hide() is None and enemy9Counter ==0:
+                    enemiess = enemiess - 1
+                    enemy9Counter = 1
+
+                    self.inst3.destroy()
+                    self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+
+            if enemyDist10 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos() - enemyDist10)
+
+
+        # if enemyDist10 < 6:
+        #     self.story.destroy()
+        #     self.story = storyModeConversation(0.10,"You've to kill all enemy to reach level 2 and win this game")
+        #     if enemyDist10 <4 and counterBullet == 0 and  enemy9Counter == 0:
+        #         self.beefyManNP9.lookAt(self.characterNP.getPos())
+        #         self.beefyManNP9.setH(self.characterNP.getH()-55)
+        #         counterBullet = 1
+        #         self.enemyFire(self.beefyManNP9)
+        #
+        #         health = health - 3
+        #         self.inst4.remove_node()
+        #         self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+        #         self.story.destroy()
+        #         self.story = storyModeConversation(0.10,"You'll lose 3 health each attack. Enemy will start to get stronger and powerful later.'")
+        #         if enemyDist10 < 2:
+        #             self.characterNP.setPos(self.characterNP.getPos() - enemyDist10+1.2)
+        #         if self.isFire == True and enemy9Counter == 0:
+        #             self.beefyManNP9.hide()
+        #             counterBullet = 0
+        #             enemy9Counter = 1
+        #             self.inst3.destroy()
+        #             self.isFire == False
+        #             self.beefyManNP9.setPos(20,20,60)
+        #             self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+#######################################################################3        ENemy 11                #############################################################
+        if enemyDist11 < 10:
+            if enemyDist11 < 7 and counterBullet == 0 and enemy10Counter == 0:
+                #self.beefyManNP10.lookAt(self.characterNP.getPos())
+                #self.beefyManNP10.setH(self.characterNP.getH()-55)
+                counterBullet = 1
+                self.enemyFire(self.beefyManNP10)
+                health = health - 3
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+                self.story.destroy()
+                self.story = storyModeConversation(0.10,"You'll lose 3 health each attack. Enemy will start to get stronger and powerful later.'")
+
+            if enemyDist11 < 6 and self.isFire == True:
+                self.beefyManNP10.hide()
+                self.isFire = False
+                counterBullet = 0
+                if self.beefyManNP10.hide() is None and enemy10Counter ==0:
+                    enemiess = enemiess - 1
+                    enemy10Counter = 1
+
+                    self.inst3.destroy()
+                    self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+
+            if enemyDist11 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos() - enemyDist11)
+
+##########################################################################      Enemy 12            ##################################################################
+        if enemyDist12 < 10:
+            #self.beefyManNP12.pose(5,'idle')
+            if enemyDist12 < 7 and counterBullet == 0 and enemy11Counter == 0:
+                #self.beefyManNP10.lookAt(self.characterNP.getPos())
+                #self.beefyManNP10.setH(self.characterNP.getH()-55)
+                counterBullet = 1
+                self.enemyFire(self.beefyManNP11)
+                health = health - 3
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+                self.story.destroy()
+                self.story = storyModeConversation(0.10,"You'll lose 3 health each attack. Enemy will start to get stronger and powerful later.'")
+
+            if enemyDist12 < 6 and self.isFire == True:
+                self.beefyManNP11.hide()
+                self.isFire = False
+                counterBullet = 0
+                if self.beefyManNP11.hide() is None and enemy11Counter ==0:
+                    enemiess = enemiess - 1
+                    enemy11Counter = 1
+
+                    self.inst3.destroy()
+                    self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+
+            if enemyDist12 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos() - enemyDist12)
+
+##########################################################################          ENEMY 13        ##################################################################
+
+        if enemyDist13 < 10:
+            #self.beefyManNP12.pose(5,'idle')
+            if enemyDist13 < 7 and counterBullet == 0 and enemy12Counter == 0:
+                #self.beefyManNP10.lookAt(self.characterNP.getPos())
+                #self.beefyManNP10.setH(self.characterNP.getH()-55)
+                counterBullet = 1
+                self.enemyFire(self.beefyManNP12)
+                health = health - 3
+                self.inst4.remove_node()
+                self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
+                self.story.destroy()
+                self.story = storyModeConversation(0.10,"You'll lose 3 health each attack. Enemy will start to get stronger and powerful later.'")
+
+            if enemyDist13 < 6 and self.isFire == True:
+                self.beefyManNP12.hide()
+                self.isFire = False
+                counterBullet = 0
+                if self.beefyManNP12.hide() is None and enemy12Counter ==0:
+                    enemiess = enemiess - 1
+                    enemy12Counter = 1
+
+                    self.inst3.destroy()
+                    self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
+
+            if enemyDist12 < 2 :
+                self.characterNP.setPos(self.characterNP.getPos() - enemyDist13)
 
 
 
@@ -716,7 +893,13 @@ class CharacterController(ShowBase):
         plankNP1.setCollideMask(BitMask32.allOn())
         plankNP1.node().addShape(plank1)
         plankNP1.setPos(70, 0, 10)
-    #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        plankPosInterval1 = plankNP1.posInterval(8, Point3(plankNP1.getX(),plankNP1.getY()+4,plankNP1.getZ()),
+                                                                    startPos=Point3(plankNP1.getX(),plankNP1.getY()-4,plankNP1.getZ()))
+        plankPosInterval = plankNP1.posInterval(8, Point3(plankNP1.getX(),plankNP1.getY()-4,plankNP1.getZ()),
+                                                    startPos=Point3(plankNP1.getX(),plankNP1.getY()+4,plankNP1.getZ()))
+        self.plankStair = Sequence(plankPosInterval1,plankPosInterval)
+        self.plankStair.loop()
+        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
         self.stoner1 = loader.loadModel("models/stone")
         self.stoner1.reparentTo(plankNP1)
         self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
@@ -743,7 +926,14 @@ class CharacterController(ShowBase):
         plankNP1.setCollideMask(BitMask32.allOn())
         plankNP1.node().addShape(plank1)
         plankNP1.setPos(90, 1, 17)
-    #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        plankPosInterval1 = plankNP1.posInterval(8, Point3(plankNP1.getX(),plankNP1.getY()+4,plankNP1.getZ()),
+                                                                    startPos=Point3(plankNP1.getX(),plankNP1.getY()-4,plankNP1.getZ()))
+        plankPosInterval = plankNP1.posInterval(8, Point3(plankNP1.getX(),plankNP1.getY()-4,plankNP1.getZ()),
+                                                    startPos=Point3(plankNP1.getX(),plankNP1.getY()+4,plankNP1.getZ()))
+        self.plankStair = Sequence(plankPosInterval1,plankPosInterval)
+        self.plankStair.loop()
+
+        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
         self.stoner1 = loader.loadModel("models/stone")
         self.stoner1.reparentTo(plankNP1)
         self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
@@ -1142,6 +1332,102 @@ class CharacterController(ShowBase):
         self.beefyManNP8.setH(-85)
         self.beefyManNP8.setPos(103, 1, 23)
         self.beefyManNP8.loop('idle')
+
+#####################################################               ENEMY 9         ###################################################################################
+        self.beefyManNP9 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP9.reparentTo(render)
+        self.beefyManNP9.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+#        self.beefyManNP8.setColor(1,0,1,1)
+        #self.panda1.setColor(1,0,1,1)
+        #self.beefyManNP9.setH(-85)
+
+        self.beefyManNP9.setPos(88, 1, 20)
+        enemy9PosInterval1 = self.beefyManNP9.posInterval(13, Point3(self.beefyManNP9.getX(),self.beefyManNP9.getY()+4,self.beefyManNP9.getZ()),
+                                                      startPos=Point3(self.beefyManNP9.getX(),self.beefyManNP9.getY()-4,self.beefyManNP9.getZ()))
+        enemy9PosInterval2 = self.beefyManNP9.posInterval(13, Point3(self.beefyManNP9.getX(),self.beefyManNP9.getY()-4,self.beefyManNP9.getZ()),
+                                                      startPos=Point3(self.beefyManNP9.getX(),self.beefyManNP9.getY()+4,self.beefyManNP9.getZ()))
+        enemy9HprInterval1 = self.beefyManNP9.hprInterval(3, Point3(self.beefyManNP9.getH()+180,self.beefyManNP9.getP(),self.beefyManNP9.getR()),
+                                                      startHpr=Point3(0, 0, 0))
+        enemy9HprInterval2 = self.beefyManNP9.hprInterval(3, Point3(0, 0, 0),
+                                                      startHpr=Point3(self.beefyManNP9.getH()+180, self.beefyManNP9.getP(),self.beefyManNP9.getR()))
+        self.enemy9Pace = Sequence(enemy9PosInterval2,enemy9HprInterval1,
+                                enemy9PosInterval1, enemy9HprInterval2)
+
+        self.enemy9Pace.loop()
+
+        self.beefyManNP9.loop('walk')
+        #self.beefyManNP9.loop('idle')
+
+############################################################            ENEMY 10        ###########################################################################
+
+        self.beefyManNP10 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP10.reparentTo(render)
+        self.beefyManNP10.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+#        self.beefyManNP8.setColor(1,0,1,1)
+        #self.panda1.setColor(1,0,1,1)
+        #self.beefyManNP10.setH(-85)
+        self.beefyManNP10.setPos(91, 1, 20)
+        self.beefyManNP10.loop('idle')
+
+###################################################################         Enemy 11            ################################################################
+
+        self.beefyManNP11 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP11.reparentTo(render)
+        self.beefyManNP11.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+#        self.beefyManNP8.setColor(1,0,1,1)
+        #self.panda1.setColor(1,0,1,1)
+        #self.beefyManNP9.setH(-85)
+
+        self.beefyManNP11.setPos(77, 1, 17)
+        enemy10PosInterval1 = self.beefyManNP11.posInterval(11, Point3(self.beefyManNP11.getX(),self.beefyManNP11.getY()+4,self.beefyManNP11.getZ()),
+                                                      startPos=Point3(self.beefyManNP11.getX(),self.beefyManNP11.getY()-4,self.beefyManNP11.getZ()))
+        enemy10PosInterval2 = self.beefyManNP11.posInterval(11, Point3(self.beefyManNP11.getX(),self.beefyManNP11.getY()-4,self.beefyManNP11.getZ()),
+                                                      startPos=Point3(self.beefyManNP11.getX(),self.beefyManNP11.getY()+4,self.beefyManNP11.getZ()))
+        enemy10HprInterval1 = self.beefyManNP11.hprInterval(3, Point3(self.beefyManNP11.getH()+180,self.beefyManNP11.getP(),self.beefyManNP11.getR()),
+                                                      startHpr=Point3(0, 0, 0))
+        enemy10HprInterval2 = self.beefyManNP11.hprInterval(3, Point3(0, 0, 0),
+                                                      startHpr=Point3(self.beefyManNP11.getH()+180, self.beefyManNP11.getP(),self.beefyManNP11.getR()))
+        self.enemy10Pace = Sequence(enemy10PosInterval2,enemy10HprInterval1,
+                                enemy10PosInterval1, enemy10HprInterval2)
+
+        self.enemy10Pace.loop()
+
+        self.beefyManNP11.loop('walk')
+##############################################################          ENEMY 12        ##########################################################################
+        self.beefyManNP12 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP12.reparentTo(render)
+        self.beefyManNP12.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+#        self.beefyManNP8.setColor(1,0,1,1)
+        #self.panda1.setColor(1,0,1,1)
+        #self.beefyManNP9.setH(-85)
+
+        self.beefyManNP12.setPos(81, 1, 17)
+        enemy11PosInterval1 = self.beefyManNP12.posInterval(9, Point3(self.beefyManNP12.getX(),self.beefyManNP12.getY()+4,self.beefyManNP12.getZ()),
+                                                      startPos=Point3(self.beefyManNP12.getX(),self.beefyManNP12.getY()-4,self.beefyManNP12.getZ()))
+        enemy11PosInterval2 = self.beefyManNP12.posInterval(9, Point3(self.beefyManNP12.getX(),self.beefyManNP12.getY()-4,self.beefyManNP12.getZ()),
+                                                      startPos=Point3(self.beefyManNP12.getX(),self.beefyManNP12.getY()+4,self.beefyManNP12.getZ()))
+        enemy11HprInterval1 = self.beefyManNP12.hprInterval(3, Point3(self.beefyManNP12.getH()+180,self.beefyManNP12.getP(),self.beefyManNP12.getR()),
+                                                      startHpr=Point3(0, 0, 0))
+        enemy11HprInterval2 = self.beefyManNP12.hprInterval(3, Point3(0, 0, 0),
+                                                      startHpr=Point3(self.beefyManNP12.getH()+180, self.beefyManNP12.getP(),self.beefyManNP12.getR()))
+        self.enemy11Pace = Sequence(enemy11PosInterval2,enemy11HprInterval1,
+                                enemy11PosInterval1, enemy11HprInterval2)
+
+        self.enemy11Pace.loop()
+
+        self.beefyManNP12.loop('walk')
 
 ############################################################            MASTER          ############################################################################
         self.masterNP = Actor('models/lego/Cinder/Cinder.egg',{
