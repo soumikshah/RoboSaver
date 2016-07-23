@@ -73,6 +73,9 @@ def storyModeConversation(pos, msg):
 def gameOverText(pos, msg):
     return OnscreenText(text=msg, style=2, fg=(1,1,1,1),
                     pos=(-1.0,0,0), align=TextNode.ALeft, scale = 0.10)
+def helpMenu(pos1,pos, msg):
+    return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
+                    pos=(0,pos1, pos), align=TextNode.ALeft, scale = 0.05)
 # def enemyNumber(pos, msg):
 #     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
 #                     pos=(0.10,0.93,0.55), align=TextNode.ALeft, scale = .05)
@@ -287,9 +290,9 @@ class CharacterController(ShowBase):
         camdist = camvec.length()
         camvec.normalize()
 
-        if (camdist > 15.0):
-            base.camera.setPos(base.camera.getPos() + camvec*(camdist-15))
-            camdist = 15.0
+        if (camdist > 17.0):
+            base.camera.setPos(base.camera.getPos() + camvec*(camdist-17))
+            camdist = 17.0
         # if (camdist < 5.0):
         #     base.camera.setPos(base.camera.getPos() - camvec*(5-camdist))
         #     camdist = 5.0
@@ -674,7 +677,7 @@ class CharacterController(ShowBase):
         #ballSize= Vec3(4.75,5.75,2.75)
         height = 0
         angle = -25
-
+#########################################################           Stairs 1            ######################################################################
         for i in range(10):
             shape = BulletBoxShape(size * 0.55)
             pos = origin * i + size * i
@@ -685,7 +688,7 @@ class CharacterController(ShowBase):
             stairNP.setPos(pos)
             stairNP.setCollideMask(BitMask32.allOn())
 
-            if i % 3 == 0:
+            if i % 2 == 0:
                 #print "soiumik"
                 stairHprInterval1 = stairNP.hprInterval(4, Point3(pos),
                                                                                 startHpr=Point3(360, 0, 0))
@@ -699,6 +702,32 @@ class CharacterController(ShowBase):
             modelNP.setScale(size)
             self.world.attachRigidBody(stairNP.node())
 
+        #origin1 = Point3(-70,3,8.50)
+        plank1 = BulletBoxShape(Vec3(-6, -9.75, 0.5))
+        plankNP1 = self.render.attachNewNode(BulletRigidBodyNode('PLANK1'))
+        plankNP1.setCollideMask(BitMask32.allOn())
+        plankNP1.node().addShape(plank1)
+        plankNP1.setPos(64, 1, 9)
+        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        self.stoner1 = loader.loadModel("models/stone")
+        self.stoner1.reparentTo(plankNP1)
+        self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
+        self.stoner1.setScale(13 ,20 , 0)
+        self.world.attachRigidBody(plankNP1.node())
+
+        plank1 = BulletBoxShape(Vec3(-6, -9.75, 0.5))
+        plankNP1 = self.render.attachNewNode(BulletRigidBodyNode('PLANK1'))
+        plankNP1.setCollideMask(BitMask32.allOn())
+        plankNP1.node().addShape(plank1)
+        plankNP1.setPos(70, 1, 14)
+        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        self.stoner1 = loader.loadModel("models/stone")
+        self.stoner1.reparentTo(plankNP1)
+        self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
+        self.stoner1.setScale(13 ,20 , 0)
+        self.world.attachRigidBody(plankNP1.node())
+
+######################################################################      Stairs 2        ##########################################################################
 
         for i in range(10):
             shape = BulletBoxShape(size * 0.55)
@@ -766,7 +795,7 @@ class CharacterController(ShowBase):
         self.stoner.setScale(13 ,20 , 0)
         self.world.attachRigidBody(plankNP.node())
 
-
+#####################################################           Stairs 3            ##########################################################################
         for i in range(10):
             #print i
             shape = BulletBoxShape(size * 0.55)
@@ -803,10 +832,14 @@ class CharacterController(ShowBase):
         h = 4.95
         w = 0.5
         shape = BulletCapsuleShape(w, h - 2 * w, ZUp)
+        b = DirectButton(text = ("Level 1"), scale=.05,pos=(-0.50,0,0.93), command= self.fire)
+        c = DirectButton(text = ("Level 2"), scale=.05,pos=(-0.25,0,0.93), command= self.fire)
+        d = DirectButton(text =("Help"), scale=.05,pos=(-0.75,0,0.93),command = self.helpMenuFunc)
         self.character = BulletCharacterControllerNode(shape, 0.4, 'Player')
         #    self.character.setMass(1.0)
         self.characterNP = self.render.attachNewNode(self.character)
         self.characterNP.setPos(-2, 0, 14)
+        #self.characterNP.setPos(70, 1, 14)
         # self.characterNP.setH(45)
         self.characterNP.setCollideMask(BitMask32.allOn())
         self.world.attachCharacter(self.character)
@@ -1128,6 +1161,35 @@ class CharacterController(ShowBase):
 
     def startGame(self):
         taskMgr.add(self.update,'updateWorld')
+
+    def helpMenuFunc(self):
+        self.insta1 = helpMenu(0.65,0.55, "[ESC]: Exit Game")
+        self.insta2 = helpMenu(0.55,0.35, "[Left Arrow]: Turn  Left")
+        self.insta3 = helpMenu(0.45,0.75, "[Right Arrow]: Turn Right")
+        self.insta4 = helpMenu(0.35,0.65, "[Up Arrow]: Run Robot Forward")
+        self.insta6 = helpMenu(0.25,0.55, "[A]: Rotate Camera Left")
+        self.insta7 = helpMenu(0.15,0.45, "[S]: Rotate Camera Right")
+        self.insta8 = helpMenu(0.05,0.35,"[W]: View Robot from top")
+        self.insta9 = helpMenu(-0.05,0.25,"[S]: View Robot from Below")
+        self.insta10 = helpMenu(-0.15,0.05,"[space] : Drop Bomb")
+        self.insta11 = helpMenu(-0.25,-0.05,"[ctrl] : Jump")
+        self.insta5 = helpMenu(-0.35,-0.05,"[F3] : Toggle Debug Mode")
+        self.e = DirectButton(text =("Close"), scale=.05,pos=(0.20,0,-0.45),command = self.helpMenuFuncClose)
+
+    def helpMenuFuncClose(self):
+        self.insta1.destroy()
+        self.insta2.destroy()
+        self.insta3.destroy()
+        self.insta4.destroy()
+        self.insta5.destroy()
+        self.insta6.destroy()
+        self.insta7.destroy()
+        self.insta8.destroy()
+        self.insta11.destroy()
+        self.insta9.destroy()
+        self.insta10.destroy()
+        self.e.destroy()
+
 
 game = CharacterController()
 game.run()
