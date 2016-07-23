@@ -293,9 +293,9 @@ class CharacterController(ShowBase):
         if (camdist > 17.0):
             base.camera.setPos(base.camera.getPos() + camvec*(camdist-17))
             camdist = 17.0
-        # if (camdist < 5.0):
-        #     base.camera.setPos(base.camera.getPos() - camvec*(5-camdist))
-        #     camdist = 5.0
+        if (camdist < 5.0):
+            base.camera.setPos(base.camera.getPos() - camvec*(5-camdist))
+            camdist = 5.0
         if inputState.isSet('topView'):    base.camera.setZ(base.camera,+20 * globalClock.getDt())
         if inputState.isSet('bottomView'): base.camera.setZ(base.camera, -20 * globalClock.getDt())
         if inputState.isSet('rightView'): base.camera.setX(base.camera, +20 * globalClock.getDt())
@@ -327,6 +327,7 @@ class CharacterController(ShowBase):
         enemy5 = self.beefyManNP5.getPos()
         enemy6 = self.beefyManNP6.getPos()
         enemy7 = self.beefyManNP7.getPos()
+        enemy8 = self.beefyManNP8.getPos()
         master = self.masterNP.getPos()
         evil = self.evilNP.getPos()
         actor = self.characterNP.getPos()
@@ -340,6 +341,7 @@ class CharacterController(ShowBase):
         distance7 = actor - enemy7
         distance8 = actor - master
         distance9 = actor - evil
+        distance10 = actor - enemy8
 
         # distance1.setZ(0)
         # distance2.setZ(0)
@@ -360,7 +362,7 @@ class CharacterController(ShowBase):
         enemyDist6 = distance7.length()
         enemyDist7 = distance8.length()
         enemyDist8 = distance9.length()
-
+        enemyDist9 = distance10.length()
         #print "this is enemy distance",enemyDist1
         #global isFire
 
@@ -553,6 +555,8 @@ class CharacterController(ShowBase):
                     self.inst3.destroy()
                     self.inst3 = addInstructions(0.65, "Enemies left:  "+str(enemiess))
 
+############################################################################        ENEMY 8             #############################################################
+
 
 
 ###########################################################################         MASTER              ##############################################################
@@ -669,10 +673,10 @@ class CharacterController(ShowBase):
 
         self.environ = loader.loadModel("models/environment")
         self.environ.reparentTo(floorNP)
-        self.grass = loader.loadTexture("models/grass.jpg")
+        self.grass = loader.loadTexture("models/grass1.jpg")
         self.environ.setTexture(self.grass, 1)
         # Stair
-        origin = Point3(2, 0, 0)
+        origin2 = Point3(2, 0, 0)
         size = Vec3(4, 4.75, 1.0)
         #ballSize= Vec3(4.75,5.75,2.75)
         height = 0
@@ -680,9 +684,10 @@ class CharacterController(ShowBase):
 #########################################################           Stairs 1            ######################################################################
         for i in range(10):
             shape = BulletBoxShape(size * 0.55)
-            pos = origin * i + size * i
+            pos = origin2 * i + size * i
             pos.setY(0)
-            pos.setX(pos.getX()*1)
+            pos.setX(pos.getX()+6)
+            # pos.setZ(1)
             stairNP = self.render.attachNewNode(BulletRigidBodyNode('Stair%i' % i))
             stairNP.node().addShape(shape)
             stairNP.setPos(pos)
@@ -701,34 +706,71 @@ class CharacterController(ShowBase):
             modelNP.setPos(-size.x/2.0, -size.y/2.0, -size.z/2.0)
             modelNP.setScale(size)
             self.world.attachRigidBody(stairNP.node())
-
-        #origin1 = Point3(-70,3,8.50)
-        plank1 = BulletBoxShape(Vec3(-6, -9.75, 0.5))
+    #origin1 = Point3(-70,3,8.50)
+    #finalBattlePlatSize = Vec3(14,28.75,2)
+    #    finalBattlePlatShape = BulletBoxShape(finalBattlePlatSize * 0.5)
+        #shape = Vec3(6.5,9.75,1.0)
+######################################################################      PLANK   1       ##########################################################################
+        plank1 = BulletBoxShape(Vec3(6.5, 9.75, 0.75))
         plankNP1 = self.render.attachNewNode(BulletRigidBodyNode('PLANK1'))
         plankNP1.setCollideMask(BitMask32.allOn())
         plankNP1.node().addShape(plank1)
-        plankNP1.setPos(64, 1, 9)
-        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        plankNP1.setPos(70, 0, 10)
+    #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
         self.stoner1 = loader.loadModel("models/stone")
         self.stoner1.reparentTo(plankNP1)
         self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
         self.stoner1.setScale(13 ,20 , 0)
         self.world.attachRigidBody(plankNP1.node())
 
-        plank1 = BulletBoxShape(Vec3(-6, -9.75, 0.5))
+###################################################################         PLANK 2         #########################################################################
+        plank1 = BulletBoxShape(Vec3(6, 9.75, 0.75))
         plankNP1 = self.render.attachNewNode(BulletRigidBodyNode('PLANK1'))
         plankNP1.setCollideMask(BitMask32.allOn())
         plankNP1.node().addShape(plank1)
-        plankNP1.setPos(70, 1, 14)
-        #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        plankNP1.setPos(80, 1, 14)
+    #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
         self.stoner1 = loader.loadModel("models/stone")
         self.stoner1.reparentTo(plankNP1)
         self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
         self.stoner1.setScale(13 ,20 , 0)
         self.world.attachRigidBody(plankNP1.node())
 
+###############################################################             PLANK 3             #####################################################################
+
+        plank1 = BulletBoxShape(Vec3(6, 9.75, 0.75))
+        plankNP1 = self.render.attachNewNode(BulletRigidBodyNode('PLANK1'))
+        plankNP1.setCollideMask(BitMask32.allOn())
+        plankNP1.node().addShape(plank1)
+        plankNP1.setPos(90, 1, 17)
+    #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        self.stoner1 = loader.loadModel("models/stone")
+        self.stoner1.reparentTo(plankNP1)
+        self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
+        self.stoner1.setScale(13 ,20 , 0)
+        self.world.attachRigidBody(plankNP1.node())
+
+
+############################################################            PLANK 4             #########################################################################
+
+        plank1 = BulletBoxShape(Vec3(6, 9.75, 0.75))
+        plankNP1 = self.render.attachNewNode(BulletRigidBodyNode('PLANK1'))
+        plankNP1.setCollideMask(BitMask32.allOn())
+        plankNP1.node().addShape(plank1)
+        plankNP1.setPos(100, 1, 20)
+    #print pos.getX(),'sadsa',pos.getY(),"Z",pos.getZ()
+        self.stoner1 = loader.loadModel("models/stone")
+        self.stoner1.reparentTo(plankNP1)
+        self.stoner1.setPos(0,0,0) #pos.getX()-6,pos.getY(),pos.getZ()-1
+        self.stoner1.setScale(13 ,20 , 0)
+        self.world.attachRigidBody(plankNP1.node())
 ######################################################################      Stairs 2        ##########################################################################
 
+        origin = Point3(2, 0, 0)
+        size = Vec3(4, 4.75, 1.0)
+        #ballSize= Vec3(4.75,5.75,2.75)
+        height = 0
+        angle = -25
         for i in range(10):
             shape = BulletBoxShape(size * 0.55)
             pos = origin * i + size * i
@@ -736,8 +778,9 @@ class CharacterController(ShowBase):
             pos.setY(0)
             pos.setX(pos.getX()*-1)
 
+
             #print actorNP.getZ()
-            if i % 2 == 0:
+            if i % 2 == 0 and i > 0:
                 #print "soiumik"
                 stairHprInterval1 = stairNP.hprInterval(3, Point3(),
                                                                             startHpr=Point3(360, 0, 0))
@@ -795,6 +838,8 @@ class CharacterController(ShowBase):
         self.stoner.setScale(13 ,20 , 0)
         self.world.attachRigidBody(plankNP.node())
 
+
+
 #####################################################           Stairs 3            ##########################################################################
         for i in range(10):
             #print i
@@ -838,8 +883,8 @@ class CharacterController(ShowBase):
         self.character = BulletCharacterControllerNode(shape, 0.4, 'Player')
         #    self.character.setMass(1.0)
         self.characterNP = self.render.attachNewNode(self.character)
-        self.characterNP.setPos(-2, 0, 14)
-        #self.characterNP.setPos(70, 1, 14)
+        #self.characterNP.setPos(-2, 0, 14)
+        self.characterNP.setPos(100, 1, 20)
         # self.characterNP.setH(45)
         self.characterNP.setCollideMask(BitMask32.allOn())
         self.world.attachCharacter(self.character)
@@ -852,6 +897,8 @@ class CharacterController(ShowBase):
 
         self.mySound = base.loader.loadSfx("models/walk.ogg")
         self.jumpSound = base.loader.loadSfx("models/armMoving.ogg")
+        self.playerBombSound = base.loader.loadSfx("models/playerBomb.ogg")
+        self.enemyBombSound = base.loader.loadSfx("models/enemyBomb.ogg")
 
 
 
@@ -1083,6 +1130,19 @@ class CharacterController(ShowBase):
         self.beefyManNP7.setPos(-67, 24, 11)
         self.beefyManNP7.loop('idle')
 
+#######################################################             Enemy 8             ###############################################################################
+        self.beefyManNP8 = Actor('models/beefy/beefy.egg',{
+                                'walk':'models/beefy/beefy-walk.egg',
+                                'idle':'models/beefy/beefy-idle.egg'})
+        self.beefyManNP8.reparentTo(render)
+        self.beefyManNP8.setScale(0.2)
+#        self.beefyManNP1.setH(180)
+#        self.beefyManNP8.setColor(1,0,1,1)
+        #self.panda1.setColor(1,0,1,1)
+        self.beefyManNP8.setH(-85)
+        self.beefyManNP8.setPos(103, 1, 23)
+        self.beefyManNP8.loop('idle')
+
 ############################################################            MASTER          ############################################################################
         self.masterNP = Actor('models/lego/Cinder/Cinder.egg',{
                                 'idle':'models/lego/Cinder/Cinder-jump.egg'})
@@ -1137,6 +1197,9 @@ class CharacterController(ShowBase):
         #a =  int(round(time))
         self.isFire = True
         obj = loader.loadModel("models/ball")
+        self.playerBombSound.setVolume(0.8)
+        #self.mySound.setLoop(True)
+        self.playerBombSound.play()
         obj.reparentTo(render)
         obj.setScale(0.3)
         obj.setPos(self.characterNP.getX(),self.characterNP.getY()+0.3,self.characterNP.getZ()-2)
@@ -1149,6 +1212,9 @@ class CharacterController(ShowBase):
 
         #a =  int(round(time))
         self.isEnemyFire = True
+        self.enemyBombSound.setVolume(0.8)
+        #self.mySound.setLoop(True)
+        self.enemyBombSound.play()
         self.enemyObj = loader.loadModel("models/ball")
         self.enemyObj.reparentTo(render)
         self.enemyObj.setScale(0.3)
