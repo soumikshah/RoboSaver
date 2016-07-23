@@ -60,13 +60,13 @@ enemy8Counter = 0
 
 def addInstructions(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
-                    pos=(-0.02,0.93,pos), align=TextNode.ALeft, scale = .05)
+                    pos=(-0.10,0.93,pos), align=TextNode.ALeft, scale = .05)
 def addInstructions1(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
                     pos=(0.65,0.93,pos), align=TextNode.ALeft, scale = .05)
 def addInstructions2(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
-                    pos=(0.35,0.93,0.55), align=TextNode.ALeft, scale = .05)
+                    pos=(0.25,0.93,0.55), align=TextNode.ALeft, scale = .05)
 def storyModeConversation(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
                     pos=(-0.90,-0.97,0), align=TextNode.ALeft, scale = .05)
@@ -129,7 +129,7 @@ class CharacterController(ShowBase):
         self.isFire = False
         self.inst3 = addInstructions(0.65, "Enemies left: 7 ")
         self.inst4 = addInstructions1(0.55, "Health: 100")
-        self.inst5 = addInstructions2(0.55,"Timer: 00:00")
+        self.inst5 = addInstructions2(0.55,"Time Left: 00:00")
         self.story = storyModeConversation(0.10,"Hello, There are 4 enemies on ground and 3 on planks. Kill them'll")
 
         # Task
@@ -274,9 +274,10 @@ class CharacterController(ShowBase):
         #print h
         nowTime = globalClock.getFrameTime() - self.startTime
         h =  int(round(nowTime))
-        self.inst5 = addInstructions2(0.68,' Timer : {}'.format(h))
-        if h > 500:
-            self.doExit()
+        self.inst5 = addInstructions2(0.68,' Time Left : {}'.format(500-h))
+        # if h = 0:
+        #     taskMgr.remove('updateWorld')
+        #     self.inst6 = gameOverText(0,'Game Over')
 
 
         # If the camera is too far from ralph, move it closer.
@@ -543,7 +544,7 @@ class CharacterController(ShowBase):
                 self.story.destroy()
                 self.isFire = False
                 counterBullet = 0
-                if beefyManNP7.hide() is None and enemy7Counter ==0:
+                if self.beefyManNP7.hide() is None and enemy7Counter ==0:
                     enemiess = enemiess - 1
                     enemy7Counter = 1
                     self.inst3.destroy()
@@ -592,7 +593,7 @@ class CharacterController(ShowBase):
                     self.story = storyModeConversation(0.10,"You Just received 5 health")
                     coin.removeNode()
 
-                elif health == 100:
+                elif health == 100 and health > 100:
                     health = health
                 self.inst4.remove_node()
                 self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
