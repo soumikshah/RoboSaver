@@ -65,6 +65,7 @@ enemy12Counter = 0
 enemy13Counter = 0
 level1 = False
 level2 = False
+welcomeword = 0
 
 def addInstructions(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
@@ -82,8 +83,11 @@ def gameOverText(pos, msg):
     return OnscreenText(text=msg, style=2, fg=(1,1,1,1),
                     pos=(-1.0,0,0), align=TextNode.ALeft, scale = 0.10)
 def helpMenu(pos1,pos, msg):
-    return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
+    return OnscreenText(text=msg, style=1, fg=(1,1,1,1),bg=(0,0,0,1),
                     pos=(0,pos1, pos), align=TextNode.ALeft, scale = 0.05)
+def welcomeText(pos1,pos, msg):
+    return OnscreenText(text=msg, style=1, fg=(1,1,1,1),bg=(0,0,0,1),
+                    pos=(-0.97,pos1, pos), align=TextNode.ALeft, scale = 0.05)
 # def enemyNumber(pos, msg):
 #     return OnscreenText(text=msg, style=1, fg=(1,1,1,1),
 #                     pos=(0.10,0.93,0.55), align=TextNode.ALeft, scale = .05)
@@ -251,6 +255,7 @@ class CharacterController(ShowBase):
         global enemy12Counter
         global enemy13Counter
         global enemiesss
+        global welcomeword
         #print taskMgr
         dt = globalClock.getDt()
         self.processInput(dt)
@@ -266,8 +271,9 @@ class CharacterController(ShowBase):
         if j == 0:
             taskMgr.remove('updateWorld')
             self.inst6 = gameOverText(0,'Game Over')
-
-
+        # if welcomeword == 0:
+        #     self.instStory = welcomeText(0.10, "Hi this is the story of Robot who's trying to save his master from evil druglord\'s army and evil scientist who are hell bent to get the technology of making robot army who can take over the world. Our aim is to save our master and kill everybody coming between us. Environment is supposed to be a jungle so army can hide in it and attack you, so mesh has not been made used here to follow the story.")
+        #     self.close = DirectButton(text = ("Close Welcome Text"), scale=.05,pos=(-0.50,0,0.15), command= self.closeStory)
         # If the camera is too far from ralph, move it closer.
         # If the camera is too close to ralph, move it farther.
         camvec = self.characterNP.getPos() - base.camera.getPos()
@@ -728,6 +734,7 @@ class CharacterController(ShowBase):
             if enemiess == 0 and enemy8Counter == 1 and enemy8Counter == 0:
                 taskMgr.remove('updateWorld')
                 self.inst6 = gameOverText(0,'You Won')
+                welcomeword = 1
 
             if enemyDist8 < 1.3 and enemy8Counter is not 1:
                 self.characterNP.setPos(self.characterNP.getPos()-enemyDist8+1)
@@ -796,6 +803,7 @@ class CharacterController(ShowBase):
             # self.evilNP.setHpr(90,0,0)
             self.evilNP.loop('dance')
             self.inst6 = gameOverText(0,'Game Over and You\'re dead meat..Err...Dead Tin')
+            welcomeword = 1
             #print "hello"
 
         return task.cont
@@ -1059,9 +1067,10 @@ class CharacterController(ShowBase):
         h = 4.95
         w = 0.5
         shape = BulletCapsuleShape(w, h - 2 * w, ZUp)
-        self.b = DirectButton(text = ("Level 1"), scale=.05,pos=(-0.50,0,0.93), command= self.level1)
-        self.c = DirectButton(text = ("Level 2"), scale=.05,pos=(-0.25,0,0.93), command= self.level2)
-        d = DirectButton(text =("Help"), scale=.05,pos=(-0.75,0,0.93),command = self.helpMenuFunc)
+        self.b = DirectButton(text = ("Level 1"), scale=.05,pos=(-0.50,0,0.94), command= self.level1)
+        self.c = DirectButton(text = ("Level 2"), scale=.05,pos=(-0.25,0,0.94), command= self.level2)
+        d = DirectButton(text =("Help"), scale=.05,pos=(-0.70,0.01,0.94),command = self.helpMenuFunc)
+        self.t = DirectButton(text=("Tips"),scale=.05,pos=(-0.90,0.01,0.94),command = self.TipsFuc)
         self.character = BulletCharacterControllerNode(shape, 0.4, 'Player')
         #    self.character.setMass(1.0)
         self.characterNP = self.render.attachNewNode(self.character)
@@ -1527,6 +1536,19 @@ class CharacterController(ShowBase):
     def startGame(self):
         taskMgr.add(self.update,'updateWorld')
 
+    def TipsFuc(self):
+        self.instatip = welcomeText(0.65,0.55,"1. To attack the enemy in better way, jump on him while pressing space to attack if its not dying.")
+        self.instatip1 = welcomeText(0.55,0.35,"2. Coins are health Potion.")
+        self.instatip2 = welcomeText(0.45,0.75,"3. Environment doesn't have mesh as storyline has enemy hiding behind the bushes.")
+        self.instatip3 = welcomeText(0.35,0.65,"4. Scientist is very difficult to kill, save some health till you reach him. Don't jump around too much.")
+        self.f = DirectButton(text =("Close"), scale=.05,pos=(0.20,0,-0.45),command = self.tipFuncClose)
+    def tipFuncClose(self):
+        self.instatip.destroy()
+        self.instatip1.destroy()
+        self.instatip2.destroy()
+        self.instatip3.destroy()
+        self.f.destroy()
+
     def helpMenuFunc(self):
         self.insta1 = helpMenu(0.65,0.55, "[ESC]: Exit Game")
         self.insta2 = helpMenu(0.55,0.35, "[Left Arrow]: Turn  Left")
@@ -1589,6 +1611,10 @@ class CharacterController(ShowBase):
         health = 100
         self.inst3.destroy()
         self.inst3 = addInstructions(0.65, "Enemies left:  "+ str(enemiess))
+
+    def closeStory(self):
+        self.instStory.destroy()
+        self.close.destroy()
 
         #self.b.text_bg(1,1,1,1)
 
