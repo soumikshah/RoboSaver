@@ -281,9 +281,9 @@ class CharacterController(ShowBase):
         camdist = camvec.length()
         camvec.normalize()
 
-        if (camdist > 17.0):
-            base.camera.setPos(base.camera.getPos() + camvec*(camdist-17))
-            camdist = 17.0
+        if (camdist > 15.0):
+            base.camera.setPos(base.camera.getPos() + camvec*(camdist-15))
+            camdist = 15.0
         if (camdist < 5.0):
             base.camera.setPos(base.camera.getPos() - camvec*(5-camdist))
             camdist = 5.0
@@ -292,7 +292,7 @@ class CharacterController(ShowBase):
         if inputState.isSet('rightView'): base.camera.setX(base.camera, +20 * globalClock.getDt())
         if inputState.isSet('leftView'): base.camera.setX(base.camera, -20 * globalClock.getDt())
         self.floater.setPos(self.characterNP.getPos())
-        self.floater.setZ(self.characterNP.getZ() + 0.4)
+        self.floater.setZ(self.characterNP.getZ() + 0.7)
         base.camera.lookAt(self.floater)
         global tempCount
         if self.characterNP.getZ()>4.33:
@@ -753,7 +753,7 @@ class CharacterController(ShowBase):
                     health = 100
 
                     self.story.destroy()
-                    self.story = storyModeConversation(0.10,"Your health is refilled. Go Down and Kill Others")
+                    self.story = storyModeConversation(0.10,"Your health is refilled and you\'re on level 2. Go Down and Kill Others")
                     healthis.removeNode()
                     self.inst4.remove_node()
                     self.inst4 = addInstructions1(0.55,"Health: {}".format(health))
@@ -1539,14 +1539,18 @@ class CharacterController(ShowBase):
     def TipsFuc(self):
         self.instatip = welcomeText(0.65,0.55,"1. To attack the enemy in better way, jump on him while pressing space to attack if its not dying.")
         self.instatip1 = welcomeText(0.55,0.35,"2. Coins are health Potion.")
-        self.instatip2 = welcomeText(0.45,0.75,"3. Environment doesn't have mesh as storyline has enemy hiding behind the bushes.")
+        self.instatip2 = welcomeText(0.45,0.75,"3. Environment doesn't have bullet mesh as storyline has enemy hiding behind the bushes.")
         self.instatip3 = welcomeText(0.35,0.65,"4. Scientist is very difficult to kill, save some health till you reach him. Don't jump around too much.")
+        self.instatip4 = welcomeText(0.25,0.55,"5. Use Headphones for best sound effect.")
+        self.instatip5 = welcomeText(0.15,0.45,"6. Adjust camera with A,S,W,D keys for best experience according to your needs.")
         self.f = DirectButton(text =("Close"), scale=.05,pos=(0.20,0,-0.45),command = self.tipFuncClose)
     def tipFuncClose(self):
         self.instatip.destroy()
         self.instatip1.destroy()
         self.instatip2.destroy()
         self.instatip3.destroy()
+        self.instatip4.destroy()
+        self.instatip5.destroy()
         self.f.destroy()
 
     def helpMenuFunc(self):
