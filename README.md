@@ -46,3 +46,4 @@ Player Controls  -
 "F3" button is used to get out of debug mode.
 "Space" button is used to drop bombs.
 
+You can watch the game play on Youtube https://www.youtube.com/watch?v=hnAZspBfNl0
